@@ -6,6 +6,7 @@
 
 datasource db {
   provider = "postgresql"
+  url = env("DATABASE_URL")
 }
 
 generator client {
@@ -18,16 +19,17 @@ model Session {
   name String
   identificacion String
   role TypeAccount @default(MECANICO)
+  credentials Credentials? @relation("SessionCredentials")
 }
 
 model Credentials {
   id Int @id @default(autoincrement())
   password String @db.VarChar(50)
-  author Sesion @relation(fields: [authorId], references: [id])
-  authorId Int
+  author Session @relation("SessionCredentials", fields: [authorId], references: [id])
+  authorId Int @unique
 }
 
-model LogSessions {
+model LogApp {
   id Int @id @default(autoincrement())
   typeChange TypeChange
   origin String
@@ -44,6 +46,6 @@ enum TypeChange {
 }
 
 enum TypeAccount {  
-  MECANNICO   
+  MECANICO   
   ADMINISTRADOR
 }
