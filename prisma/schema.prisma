@@ -1,17 +1,235 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id             Int          @id @default(autoincrement())
+  name           String
+  identificacion String
+  role           TypeAccount  @default(MECANICO)
+  createdAt      DateTime     @default(now())
+  credentials    Credentials? @relation("SessionCredentials")
+}
+
+model Credentials {
+  id        Int      @id @default(autoincrement())
+  password  String   @db.VarChar(50)
+  updatedAt DateTime @updatedAt
+  sessionId Int      @unique
+  author    Session  @relation("SessionCredentials", fields: [sessionId], references: [id])
+}
+
+model Client {
+  id                Int                     @id @default(autoincrement())
+  firstName         String                  @db.VarChar(50)
+  middleName        String                  @db.VarChar(50)
+  firstSurname      String                  @db.VarChar(50)
+  secondSurname     String                  @db.VarChar(50)
+  filed             String                  @db.VarChar(50)
+  description       String?                 @default("Descripcion no establecida")
+  clientState       Boolean
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  clientAppointment AppointmentScheduling[] @relation("clientAppointment")
+  clientContact     ClientContact[]         @relation("clientContact")
+  clientVehicle     ClientVehicle[]         @relation("clientVehicle")
+  clientInvoice     Invoice[]               @relation("clientInvoice")
+}
+
+model ClientContact {
+  id          Int      @id @default(autoincrement())
+  phoneNumber String   @db.VarChar(20)
+  email       String   @db.VarChar(50)
+  address     String   @db.VarChar(50)
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  clientId    Int
+  author      Client   @relation("clientContact", fields: [clientId], references: [id])
+}
+
+model AppointmentScheduling {
+  id               Int              @id @default(autoincrement())
+  appointmentDate  DateTime
+  ubicacion        String           @db.VarChar(50)
+  appointmentState AppointmentState @default(ASIGNADA)
+  clientId         Int
+  author           Client           @relation("clientAppointment", fields: [clientId], references: [id])
+}
+
+model ClientVehicle {
+  id                 Int      @id @default(autoincrement())
+  brand              String   @db.VarChar(20)
+  model              String   @db.VarChar(20)
+  year               DateTime @db.Date
+  engineDisplacement Int
+  createAt           DateTime @default(now())
+  descripton         String
+  updatedAt          DateTime @updatedAt
+  clientId           Int
+  author             Client   @relation("clientVehicle", fields: [clientId], references: [id])
+}
+
+model Invoice {
+  id            Int            @id @default(autoincrement())
+  createAt      DateTime       @default(now())
+  total         Decimal        @db.Decimal(15, 2)
+  clientId      Int
+  author        Client         @relation("clientInvoice", fields: [clientId], references: [id])
+  invoiceDetail InvoiceDetail? @relation("invoiceDetail")
+}
+
+model InvoiceDetail {
+  id               Int      @id @default(autoincrement())
+  amount           Int
+  subtotal         Decimal  @db.Decimal(15, 2)
+  pieceId          Int
+  invoiceDetail_id Int      @unique
+  serviceId        Int
+  author           Invoice  @relation("invoiceDetail", fields: [invoiceDetail_id], references: [id])
+  pieces           Pieces   @relation("piece_invoiceDetail", fields: [pieceId], references: [id])
+  purchasedService Services @relation("clientService", fields: [serviceId], references: [id])
+}
+
+model Services {
+  id                 Int             @id @default(autoincrement())
+  name               String          @db.VarChar(50)
+  description        String
+  price              Decimal         @db.Decimal(15, 2)
+  estimatedDuration  String          @db.VarChar(20)
+  createAt           DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  serviceCategory_id Int
+  invoiceDetail      InvoiceDetail[] @relation("clientService")
+  author             ServiceCategory @relation("serviceCategory", fields: [serviceCategory_id], references: [id])
+}
+
+model ServiceCategory {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(50)
+  description String
+  createAt    DateTime   @default(now())
+  services    Services[] @relation("serviceCategory")
+}
+
+model Pieces {
+  id                      Int                       @id @default(autoincrement())
+  name                    String                    @db.VarChar(30)
+  description             String
+  comments                String
+  Guarantee               String
+  price                   Decimal                   @db.Decimal(15, 2)
+  estado                  PieceState                @default(DISPONIBLE)
+  stock                   Int
+  categoryId              Int
+  ubicationId             Int
+  createAt                DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  availablePieces_vehicle AvailablePieces_vehicle[] @relation("pieceVehicle")
+  informationPieces       InformationPieces[]       @relation("pieceMore_information")
+  invoiceDetail           InvoiceDetail[]           @relation("piece_invoiceDetail")
+  pieceCategory           PieceCategory             @relation("pieceCategory", fields: [categoryId], references: [id])
+  ubicationPiece          UbicationPiece            @relation("pieceUbication", fields: [ubicationId], references: [id])
+}
+
+model InformationPieces {
+  id                 Int      @id @default(autoincrement())
+  dateOf_entry       DateTime
+  moreInformation_id Int
+  author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id])
+}
+
+model PieceCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(50)
+  description String
+  createAt    DateTime @default(now())
+  pieces      Pieces[] @relation("pieceCategory")
+}
+
+model UbicationPiece {
+  id        Int      @id @default(autoincrement())
+  ubication String   @db.VarChar(50)
+  createAt  DateTime @default(now())
+  piece     Pieces[] @relation("pieceUbication")
+}
+
+model AvailablePieces_vehicle {
+  id               Int    @id @default(autoincrement())
+  brand            String @db.VarChar(20)
+  model            String @db.VarChar(20)
+  pieceVehiculo_id Int
+  author           Pieces @relation("pieceVehicle", fields: [pieceVehiculo_id], references: [id])
+}
+
+model Suppliers {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(50)
+  state              stateSuppliers       @default(ACTIVO)
+  payCondition       String
+  createAt           DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  suppliersContact   SuppliersContact?    @relation("contactSuppliers")
+  suppliersType      SuppliersType[]      @relation("typeSuppliers")
+  suppliersUbication SuppliersUbication[] @relation("ubicationSuppliers")
+}
+
+model SuppliersUbication {
+  id          Int       @id @default(autoincrement())
+  country     String    @db.VarChar(50)
+  city        String    @db.VarChar(50)
+  region      String    @db.VarChar(50)
+  proveedorId Int
+  author      Suppliers @relation("ubicationSuppliers", fields: [proveedorId], references: [id])
+}
+
+model SuppliersContact {
+  id          Int       @id @default(autoincrement())
+  direction   String    @db.VarChar(50)
+  phoneNumber String    @db.VarChar(15)
+  email       String    @db.VarChar(50)
+  proveedorId Int       @unique
+  author      Suppliers @relation("contactSuppliers", fields: [proveedorId], references: [id])
+}
+
+model SuppliersType {
+  id          Int           @id @default(autoincrement())
+  type        typeSuppliers
+  proveedorId Int
+  author      Suppliers     @relation("typeSuppliers", fields: [proveedorId], references: [id])
+}
+
+model LogApp {
+  id         Int        @id @default(autoincrement())
+  typeChange TypeChange
+  origin     String
+  title      String
+  message    String?
+  data       Json
+}
+
+enum typeSuppliers {
+  REPUESTOS
+  HERRAMIENTAS
+  LUBRICANTES
+  SERVICIOS
+  VEHICULOS
+  CONSUMIBLES
+  SOFTWARE
+}
+
+enum stateSuppliers {
+  ACTIVO
+  INACTIVO
+  PENDIENTE
+  BLOQUEADO
+  SUSPENDIDO
+  ELIMINADO
 }
 
 enum TypeChange {
@@ -21,79 +239,19 @@ enum TypeChange {
   READ
 }
 
-enum TypeAccount {  
-  MECANICO   
+enum TypeAccount {
+  MECANICO
   ADMINISTRADOR
 }
 
-enum appointmentState {
+enum AppointmentState {
   ASIGNADA
   COMPLETADA
   PENDIENTE
   CANCELADA
 }
 
-model Session {
-  id Int @id @default(autoincrement())
-  name String
-  identificacion String
-  role TypeAccount @default(MECANICO)
-  credentials Credentials? @relation("SessionCredentials")
-}
-
-model Credentials {
-  id Int @id @default(autoincrement())
-  password String @db.VarChar(50)
-  author Session @relation("SessionCredentials", fields: [authorId], references: [id])
-  authorId Int @unique
-}
-
-model Client {
-  id Int @id @default(autoincrement())
-  firstName String @db.VarChar(50)
-  middleName String @db.VarChar(50)
-  firstSurname String @db.VarChar(50)
-  secondSurname String @db.VarChar(50)
-  filed String @db.VarChar(50)
-  description String? @default("Descripcion no establecida")
-  clientState Boolean
-  clientContact clientContact[] @relation("clientContact")
-  clientVehicle clientVehicle[] @relation("clientVehicle")
-}
-
-model clientContact {
-  id Int @id @default(autoincrement())
-  phoneNumber String @db.VarChar(20)
-  email String @db.VarChar(50)
-  address String @db.VarChar(50)
-  author Client @relation("clientContact", fields: [authorId], references: [id])
-  authorId Int
-}
-
-model appointmentScheduling {
-  id Int @id @default(autoincrement())
-  appointmentDate DateTime
-  ubicacion String @db.VarChar(50)
-  appointmentState appointmentState @default(ASIGNADA)
-}
-
-model vehicleClients {
-  id Int @id @default(autoincrement())
-  brand String @db.VarChar(20)
-  model String @db.VarChar(20)
-  year DateTime @db.date
-  engineDisplacement Int
-  createAt DateTime
-  descripton String
-  author Client @relation("clientVehicle", fields: [authorId], references: [id])
-  authorId Int
-}
-
-model LogApp {
-  id Int @id @default(autoincrement())
-  typeChange TypeChange
-  origin String
-  title String
-  message String?
-  data Json
+enum PieceState {
+  DISPONIBLE
+  AGOTADO
 }
