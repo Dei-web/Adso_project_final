@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -27,12 +26,9 @@ model Credentials {
 
 model Client {
   id                Int                     @id @default(autoincrement())
-  firstName         String                  @db.VarChar(50)
-  middleName        String                  @db.VarChar(50)
-  firstSurname      String                  @db.VarChar(50)
-  secondSurname     String                  @db.VarChar(50)
-  filed             String                  @db.VarChar(50)
-  description       String?                 @default("Descripcion no establecida")
+  fullName         String                  @db.VarChar(100)
+  fullSurname      String                  @db.VarChar(100)
+  identified             String                  @db.VarChar(50) @unique
   clientState       Boolean
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
@@ -58,6 +54,7 @@ model AppointmentScheduling {
   appointmentDate  DateTime
   ubicacion        String           @db.VarChar(50)
   appointmentState AppointmentState @default(ASIGNADA)
+  details String
   clientId         Int
   author           Client           @relation("clientAppointment", fields: [clientId], references: [id])
 }
@@ -69,7 +66,7 @@ model ClientVehicle {
   year               DateTime @db.Date
   engineDisplacement Int
   createAt           DateTime @default(now())
-  descripton         String
+  description         String
   updatedAt          DateTime @updatedAt
   clientId           Int
   author             Client   @relation("clientVehicle", fields: [clientId], references: [id])
@@ -88,6 +85,8 @@ model InvoiceDetail {
   id               Int      @id @default(autoincrement())
   amount           Int
   subtotal         Decimal  @db.Decimal(15, 2)
+  extra Decimal @db.Decimal(15, 2)
+  description String
   pieceId          Int
   invoiceDetail_id Int      @unique
   serviceId        Int
@@ -101,10 +100,10 @@ model Services {
   name               String          @db.VarChar(50)
   description        String
   price              Decimal         @db.Decimal(15, 2)
-  estimatedDuration  String          @db.VarChar(20)
   createAt           DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
   serviceCategory_id Int
+  guarantee          String
   invoiceDetail      InvoiceDetail[] @relation("clientService")
   author             ServiceCategory @relation("serviceCategory", fields: [serviceCategory_id], references: [id])
 }
@@ -121,8 +120,6 @@ model Pieces {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @db.VarChar(30)
   description             String
-  comments                String
-  Guarantee               String
   price                   Decimal                   @db.Decimal(15, 2)
   estado                  PieceState                @default(DISPONIBLE)
   stock                   Int
