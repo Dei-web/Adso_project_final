@@ -1,4 +1,5 @@
 import { Decimal } from "decimal.js";
+import type { PieceState } from '@prisma/client';
 
 export enum TypeSuppliers {
   REPUESTOS = "REPUESTOS",
@@ -36,11 +37,6 @@ export enum AppointmentState {
   COMPLETADA = "COMPLETADA",
   PENDIENTE = "PENDIENTE",
   CANCELADA = "CANCELADA",
-}
-
-export enum PieceState {
-  DISPONIBLE = "DISPONIBLE",
-  AGOTADO = "AGOTADO",
 }
 
 /* ========================= MODELS ========================= */
@@ -154,7 +150,7 @@ export interface ServiceCategory {
   services?: Services[];
 }
 
-export interface Pieces {
+export interface CustomPieces {
   id: number;
   name: string;
   description: string;
@@ -168,8 +164,18 @@ export interface Pieces {
   availablePieces_vehicle?: AvailablePieces_vehicle[];
   informationPieces?: InformationPieces[];
   invoiceDetail?: InvoiceDetail[];
-  pieceCategory: PieceCategory;
-  ubicationPiece: UbicationPiece;
+  pieceCategory?: PieceCategory;
+  ubicationPiece?: UbicationPiece;
+}
+
+export interface CreatePieces {
+  name: string;
+  description: string;
+  price: Decimal;
+  estado: PieceState;
+  stock: number;
+  categoryId: number;
+  ubicationId: number;
 }
 
 export interface InformationPieces {
