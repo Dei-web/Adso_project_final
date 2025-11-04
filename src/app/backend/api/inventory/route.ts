@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CreatePieces, CustomPieces, InformationPieces, PieceCategory, UbicationPiece } from '../../types/models/entity';
+import { ModifyPieces, CustomPieces, InformationPieces, PieceCategory, UbicationPiece } from '../../types/models/entity';
 
 export async function GET(): Promise<NextResponse<CustomPieces[] | { error: string }>> {
   try {
@@ -27,7 +27,7 @@ export async function GET(): Promise<NextResponse<CustomPieces[] | { error: stri
 
 export async function POST(req: NextRequest) {
   try {
-    const body: CreatePieces = await req.json();
+    const body: ModifyPieces = await req.json();
 
     const newPiece = await prisma.pieces.create({
       data: {

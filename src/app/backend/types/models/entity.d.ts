@@ -168,7 +168,7 @@ export interface CustomPieces {
   ubicationPiece?: UbicationPiece;
 }
 
-export interface CreatePieces {
+export interface ModifyPieces {
   name: string;
   description: string;
   price: Decimal;
