@@ -1,23 +1,16 @@
 import { NextResponse, NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { ModifyPieces, CustomPieces, InformationPieces, PieceCategory, UbicationPiece } from '../../types/models/entity';
+import { getPieces, createPiece } from "@/app/backend/services/piecesServices";
 
 export async function GET(): Promise<NextResponse<CustomPieces[] | { error: string }>> {
   try {
-    const inventory = await prisma.pieces.findMany();
-
-    if (!inventory.length) {
-      return NextResponse.json(
-        { error: 'Productos no registrados' },
-        { status: 404 }
-      )
-    }
+    const data = await getPieces();
 
     return NextResponse.json(
-      inventory,
+      data,
       { status: 200 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Ha ocurrido un error interno' },
       { status: 500 }
@@ -29,17 +22,13 @@ export async function POST(req: NextRequest) {
   try {
     const body: ModifyPieces = await req.json();
 
-    const newPiece = await prisma.pieces.create({
-      data: {
-        ...body
-      }
-    });
+    const data = await createPiece(body);
 
     return NextResponse.json(
-      newPiece,
+      data,
       { status: 201 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Ha ocurrido un error interno' },
       { status: 500 }

@@ -38,8 +38,8 @@ export const piecesRepository = {
                 where: { id },
                 data
             });
-        } catch {
-            throw new Error("Error en la actualizacion de campos");
+        } catch (error) {
+            throw new Error("Error en la actualizacion de campos"+ error);
         }
     },
 
