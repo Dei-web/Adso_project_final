@@ -1,18 +1,42 @@
 import { authRepository } from "../repository/authRepository";
-import { CustomSession, CreateSession } from "../types/models/entity";
+import { CreateSession, ReturnSession } from "../types/models/entity";
+import { hashed, verifyHash } from "./argonService";
 
-export async function getSessionById(identificacion: string): Promise<CustomSession> {
-    const data = await authRepository.findById(identificacion);
+export async function getSessionById(email: string, password: string): Promise<ReturnSession> {
+    const data = await authRepository.findById(email);
 
     if (!data) {
         throw new Error("No hay usuarios disponibles");
     }
 
+    if (!data.credentials) {
+        throw new Error("El usuario no tiene credenciales asociadas");
+    }
+
+    const parsePass = await verifyHash(data.credentials.password, password);
+
+    if (!parsePass) {
+        throw new Error("Contraseña incorrecta");
+    }
+
     return data;
 }
 
+export async function sessionExist(emailSession: string): Promise<boolean> {
+    const success = await authRepository.getSession(emailSession);
+
+    if (!success) {
+        throw new Error("No se encontro el usuario consultado");
+    }
+
+    return success;
+}
+
 export async function createSession(newSession: CreateSession) {
-    return await authRepository.createSession(newSession);
+    const dataSession = await newSession;
+    const passHashed = await hashed(dataSession.password);
+    dataSession.password = passHashed;
+    return await authRepository.createSession(dataSession);
 }
 
 function cleanData<T extends Record<string, unknown>>(data: T): Partial<T> {

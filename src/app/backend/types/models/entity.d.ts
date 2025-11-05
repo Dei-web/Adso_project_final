@@ -43,6 +43,20 @@ export interface CreateSession {
   password: string;
 }
 
+export interface ReturnSession {
+  id: number;
+  name: string;
+  identificacion: string;
+  email: string;
+  role: string;
+  credentials: { password: string } | null;
+}
+
+export interface ReturnCredentials {
+  id: number;
+  credentials: { password: string } | null;
+}
+
 export interface CustomSession {
   id: number;
   name: string;

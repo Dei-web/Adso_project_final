@@ -1,12 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getSessionById } from "@/app/backend/services/authServices";
+import { sessionExist } from "@/app/backend/services/authServices";
 
 export async function POST(request: NextRequest) {
     try {
         const getSession = await request.json();
         const email = await getSession.email;
-        const pass = await getSession.password;
-        const data = await getSessionById(email, pass);
+        const data = await sessionExist(email);
 
         return NextResponse.json(
             data,

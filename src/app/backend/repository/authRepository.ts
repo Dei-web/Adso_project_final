@@ -1,10 +1,10 @@
 import { prisma, Prisma } from "@/lib/prisma";
-import { CreateSession, CustomSession } from "../types/models/entity";
+import { CreateSession, ReturnCredentials, ReturnSession } from "../types/models/entity";
 
 export const authRepository = {
-    async findById(email: string): Promise<CustomSession | null> {
+    async findById(email: string): Promise<ReturnSession | null> {
         try {
-            return await prisma.session.findUnique({
+            return await prisma.session.findFirst({
                 where: { email },
                 select: {
                     id: true,
@@ -19,6 +19,36 @@ export const authRepository = {
                     }
                 }
             });
+        } catch {
+            throw new Error("Error al consultar usuario");
+        }
+    },
+
+    async getPass(email: string): Promise<ReturnCredentials | null> {
+        try {
+            return await prisma.session.findUnique({
+                where: { email },
+                select: {
+                    id: true,
+                    credentials: {
+                        select: {
+                            password: true
+                        }
+                    }
+                }
+            });
+        } catch {
+            throw new Error("Error al consultar usuario");
+        }
+    },
+
+    async getSession(emailSession: string): Promise<boolean> {
+        try {
+            const count = await prisma.session.count({
+                where: { email: emailSession }
+            });
+
+            return count > 0;
         } catch {
             throw new Error("Error al consultar usuario");
         }
