@@ -10,7 +10,8 @@ datasource db {
 model Session {
   id             Int          @id @default(autoincrement())
   name           String
-  identificacion String
+  identificacion String @unique
+  email String @unique
   role           TypeAccount  @default(MECANICO)
   createdAt      DateTime     @default(now())
   credentials    Credentials? @relation("SessionCredentials")
@@ -26,9 +27,9 @@ model Credentials {
 
 model Client {
   id                Int                     @id @default(autoincrement())
-  fullName         String                  @db.VarChar(100)
-  fullSurname      String                  @db.VarChar(100)
-  identified             String                  @db.VarChar(50) @unique
+  fullName          String                  @db.VarChar(100)
+  fullSurname       String                  @db.VarChar(100)
+  identified        String                  @unique @db.VarChar(50)
   clientState       Boolean
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
@@ -54,7 +55,7 @@ model AppointmentScheduling {
   appointmentDate  DateTime
   ubicacion        String           @db.VarChar(50)
   appointmentState AppointmentState @default(ASIGNADA)
-  details String
+  details          String
   clientId         Int
   author           Client           @relation("clientAppointment", fields: [clientId], references: [id])
 }
@@ -66,7 +67,7 @@ model ClientVehicle {
   year               DateTime @db.Date
   engineDisplacement Int
   createAt           DateTime @default(now())
-  description         String
+  description        String
   updatedAt          DateTime @updatedAt
   clientId           Int
   author             Client   @relation("clientVehicle", fields: [clientId], references: [id])
@@ -85,8 +86,8 @@ model InvoiceDetail {
   id               Int      @id @default(autoincrement())
   amount           Int
   subtotal         Decimal  @db.Decimal(15, 2)
-  extra Decimal @db.Decimal(15, 2)
-  description String
+  extra            Decimal  @db.Decimal(15, 2)
+  description      String
   pieceId          Int
   invoiceDetail_id Int      @unique
   serviceId        Int

@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { ModifyPieces, InformationPieces, PieceCategory, UbicationPiece, CustomPieces } from '../../../types/models/entity';
+import { CustomPieces } from '../../../types/models/entity';
 import { deletePiece, getPieceById, updateById } from "@/app/backend/services/piecesServices";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {

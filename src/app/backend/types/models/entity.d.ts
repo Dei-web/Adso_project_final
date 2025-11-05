@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import type { PieceState } from '@prisma/client';
+import type { PieceState, TypeAccount } from '@prisma/client';
 
 export enum TypeSuppliers {
   REPUESTOS = "REPUESTOS",
@@ -27,11 +27,6 @@ export enum TypeChange {
   READ = "READ",
 }
 
-export enum TypeAccount {
-  MECANICO = "MECANICO",
-  ADMINISTRADOR = "ADMINISTRADOR",
-}
-
 export enum AppointmentState {
   ASIGNADA = "ASIGNADA",
   COMPLETADA = "COMPLETADA",
@@ -41,21 +36,20 @@ export enum AppointmentState {
 
 /* ========================= MODELS ========================= */
 
-export interface Session {
+export interface CreateSession {
+  name: string;
+  identificacion: string;
+  email: string;
+  password: string;
+}
+
+export interface CustomSession {
   id: number;
   name: string;
   identificacion: string;
+  email: string;
   role: TypeAccount;
-  createdAt: Date;
-  credentials?: Credentials;
-}
-
-export interface Credentials {
-  id: number;
-  password: string;
-  updatedAt: Date;
-  sessionId: number;
-  author: Session;
+  credentials: { password: string } | null;
 }
 
 export interface Client {

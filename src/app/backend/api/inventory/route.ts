@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { ModifyPieces, CustomPieces, InformationPieces, PieceCategory, UbicationPiece } from '../../types/models/entity';
+import { ModifyPieces, CustomPieces } from '../../types/models/entity';
 import { getPieces, createPiece } from "@/app/backend/services/piecesServices";
 
 export async function GET(): Promise<NextResponse<CustomPieces[] | { error: string }>> {
