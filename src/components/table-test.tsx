@@ -17,6 +17,25 @@ import {
   Search,
 } from "lucide-react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/components/ui/card";
+
 interface InventoryItem {
   id: number;
   header: string;
@@ -52,232 +71,482 @@ const MOCK_DATA: InventoryItem[] = [
   {
     id: 3,
     header: "Pastillas de Freno Delanteras",
-    stock: 11,
+    stock: 15,
     categoria: "Frenos",
     status: "Done",
-    price: 18500,
+    price: 12500,
     supplier: "Brembo",
     lastUpdated: "14 Ene",
   },
   {
     id: 4,
-    header: "Líquido Refrigerante Orgánico",
-    stock: 7,
-    categoria: "Fluidos",
-    status: "Done",
-    price: 21000,
-    supplier: "Prestone",
-    lastUpdated: "15 Ene",
+    header: "Batería 12V 60Ah",
+    stock: 8,
+    categoria: "Eléctricos",
+    status: "Pending",
+    price: 45000,
+    supplier: "Bosch",
+    lastUpdated: "13 Ene",
   },
   {
     id: 5,
-    header: "Batería AGM 12V 14Ah",
-    stock: 2,
-    categoria: "Eléctrico",
-    status: "Pending",
-    price: 155000,
-    supplier: "Yuasa",
-    lastUpdated: "13 Ene",
+    header: "Filtro de Aire Deportivo",
+    stock: 22,
+    categoria: "Filtros",
+    status: "Done",
+    price: 8900,
+    supplier: "K&N",
+    lastUpdated: "12 Ene",
   },
   {
     id: 6,
-    header: "Correa de Distribución",
-    stock: 19,
-    categoria: "Transmisión",
-    status: "Done",
-    price: 76000,
-    supplier: "Gates",
-    lastUpdated: "15 Ene",
-  },
-  {
-    id: 7,
-    header: "Sensor de Oxígeno OBD2",
-    stock: 3,
-    categoria: "Sensores",
-    status: "Pending",
-    price: 120000,
-    supplier: "Denso",
-    lastUpdated: "14 Ene",
-  },
-  {
-    id: 8,
-    header: "Juego de Bujías Iridium",
-    stock: 16,
+    header: "Bujías de Platino (Set 4)",
+    stock: 18,
     categoria: "Encendido",
     status: "Done",
-    price: 42000,
+    price: 15600,
     supplier: "NGK",
-    lastUpdated: "16 Ene",
-  },
-  {
-    id: 9,
-    header: "Kit de Embrague Sport",
-    stock: 5,
-    categoria: "Transmisión",
-    status: "Done",
-    price: 165000,
-    supplier: "Sachs",
-    lastUpdated: "12 Ene",
-  },
-  {
-    id: 10,
-    header: "Aceite de Caja 75W-90",
-    stock: 10,
-    categoria: "Lubricantes",
-    status: "Done",
-    price: 34000,
-    supplier: "Liqui Moly",
-    lastUpdated: "14 Ene",
-  },
-  {
-    id: 11,
-    header: "Filtro de Aire Deportivo",
-    stock: 6,
-    categoria: "Filtros",
-    status: "Done",
-    price: 51000,
-    supplier: "K&N",
-    lastUpdated: "16 Ene",
-  },
-  {
-    id: 12,
-    header: "Líquido de Frenos DOT-4",
-    stock: 4,
-    categoria: "Frenos",
-    status: "Pending",
-    price: 11500,
-    supplier: "Castrol",
-    lastUpdated: "15 Ene",
-  },
-  {
-    id: 13,
-    header: "Bobina de Encendido",
-    stock: 9,
-    categoria: "Encendido",
-    status: "Done",
-    price: 89000,
-    supplier: "Denso",
-    lastUpdated: "13 Ene",
-  },
-  {
-    id: 14,
-    header: "Kit de Cadena Reforzado",
-    stock: 2,
-    categoria: "Transmisión",
-    status: "Pending",
-    price: 190000,
-    supplier: "RK Takasago",
-    lastUpdated: "12 Ene",
-  },
-  {
-    id: 15,
-    header: "Batería de Gel 12V",
-    stock: 12,
-    categoria: "Eléctrico",
-    status: "Done",
-    price: 139000,
-    supplier: "Motobatt",
-    lastUpdated: "15 Ene",
-  },
-  {
-    id: 16,
-    header: "Tornillería Alta Resistencia",
-    stock: 55,
-    categoria: "Repuestos",
-    status: "Done",
-    price: 4500,
-    supplier: "Truper",
-    lastUpdated: "16 Ene",
-  },
-  {
-    id: 17,
-    header: "Aceite 2T Sintético",
-    stock: 8,
-    categoria: "Lubricantes",
-    status: "Done",
-    price: 27000,
-    supplier: "Motul",
-    lastUpdated: "14 Ene",
-  },
-  {
-    id: 18,
-    header: "Kit de Pastillas Traseras",
-    stock: 1,
-    categoria: "Frenos",
-    status: "Pending",
-    price: 16500,
-    supplier: "Ferodo",
     lastUpdated: "11 Ene",
   },
   {
-    id: 19,
-    header: "Relé de Arranque",
+    id: 7,
+    header: "Amortiguador Trasero Izquierdo",
     stock: 6,
-    categoria: "Eléctrico",
+    categoria: "Suspensión",
+    status: "Pending",
+    price: 28000,
+    supplier: "Monroe",
+    lastUpdated: "10 Ene",
+  },
+  {
+    id: 8,
+    header: "Correa de Distribución",
+    stock: 12,
+    categoria: "Motor",
     status: "Done",
-    price: 59000,
+    price: 18500,
+    supplier: "Gates",
+    lastUpdated: "09 Ene",
+  },
+  {
+    id: 9,
+    header: "Refrigerante Anticongelante 1L",
+    stock: 45,
+    categoria: "Lubricantes",
+    status: "Done",
+    price: 4200,
+    supplier: "Castrol",
+    lastUpdated: "08 Ene",
+  },
+  {
+    id: 10,
+    header: "Sensor de Oxígeno",
+    stock: 3,
+    categoria: "Eléctricos",
+    status: "Pending",
+    price: 35000,
+    supplier: "Bosch",
+    lastUpdated: "07 Ene",
+  },
+  {
+    id: 11,
+    header: "Discos de Freno Ventilados",
+    stock: 10,
+    categoria: "Frenos",
+    status: "Done",
+    price: 32000,
+    supplier: "Brembo",
+    lastUpdated: "06 Ene",
+  },
+  {
+    id: 12,
+    header: "Filtro de Combustible",
+    stock: 28,
+    categoria: "Filtros",
+    status: "Done",
+    price: 6700,
+    supplier: "Mann",
+    lastUpdated: "05 Ene",
+  },
+  {
+    id: 13,
+    header: "Alternador 90A",
+    stock: 5,
+    categoria: "Eléctricos",
+    status: "Pending",
+    price: 58000,
     supplier: "Valeo",
-    lastUpdated: "15 Ene",
+    lastUpdated: "04 Ene",
+  },
+  {
+    id: 14,
+    header: "Bomba de Agua",
+    stock: 14,
+    categoria: "Motor",
+    status: "Done",
+    price: 22000,
+    supplier: "Gates",
+    lastUpdated: "03 Ene",
+  },
+  {
+    id: 15,
+    header: "Aceite de Transmisión ATF",
+    stock: 25,
+    categoria: "Lubricantes",
+    status: "Done",
+    price: 11200,
+    supplier: "Mobil",
+    lastUpdated: "02 Ene",
+  },
+  {
+    id: 16,
+    header: "Espejo Retrovisor Derecho",
+    stock: 7,
+    categoria: "Carrocería",
+    status: "Pending",
+    price: 42000,
+    supplier: "OEM",
+    lastUpdated: "01 Ene",
+  },
+  {
+    id: 17,
+    header: "Faro Delantero LED",
+    stock: 9,
+    categoria: "Iluminación",
+    status: "Pending",
+    price: 65000,
+    supplier: "Philips",
+    lastUpdated: "31 Dic",
+  },
+  {
+    id: 18,
+    header: "Tensor de Correa",
+    stock: 16,
+    categoria: "Motor",
+    status: "Done",
+    price: 14500,
+    supplier: "Gates",
+    lastUpdated: "30 Dic",
+  },
+  {
+    id: 19,
+    header: "Radiador Aluminio",
+    stock: 4,
+    categoria: "Refrigeración",
+    status: "Pending",
+    price: 85000,
+    supplier: "Denso",
+    lastUpdated: "29 Dic",
   },
   {
     id: 20,
-    header: "Amortiguador Trasero Regulable",
-    stock: 3,
-    categoria: "Suspensión",
-    status: "Pending",
-    price: 345000,
-    supplier: "KYB",
-    lastUpdated: "13 Ene",
+    header: "Cable de Acelerador",
+    stock: 20,
+    categoria: "Transmisión",
+    status: "Done",
+    price: 8500,
+    supplier: "OEM",
+    lastUpdated: "28 Dic",
   },
   {
     id: 21,
-    header: "Lubricante de Cadenas",
-    stock: 18,
-    categoria: "Lubricantes",
+    header: "Empaquetadura de Culata",
+    stock: 11,
+    categoria: "Motor",
     status: "Done",
-    price: 28000,
-    supplier: "Repsol",
-    lastUpdated: "16 Ene",
+    price: 25000,
+    supplier: "Elring",
+    lastUpdated: "27 Dic",
   },
   {
     id: 22,
-    header: "Módulo CDI Racing",
-    stock: 2,
-    categoria: "Electrónica",
-    status: "Pending",
-    price: 220000,
-    supplier: "Mitsubishi",
-    lastUpdated: "15 Ene",
+    header: "Manguera Superior Radiador",
+    stock: 30,
+    categoria: "Refrigeración",
+    status: "Done",
+    price: 5200,
+    supplier: "Gates",
+    lastUpdated: "26 Dic",
   },
   {
     id: 23,
-    header: "Filtro de Combustible",
-    stock: 20,
-    categoria: "Filtros",
-    status: "Done",
-    price: 9500,
-    supplier: "Mahle",
-    lastUpdated: "14 Ene",
+    header: "Brazo de Suspensión Inferior",
+    stock: 8,
+    categoria: "Suspensión",
+    status: "Pending",
+    price: 38000,
+    supplier: "TRW",
+    lastUpdated: "25 Dic",
   },
   {
     id: 24,
-    header: "Juego de Valvulas Motor",
-    stock: 4,
-    categoria: "Motor",
-    status: "Pending",
-    price: 135000,
-    supplier: "INA",
-    lastUpdated: "12 Ene",
+    header: "Termostato Motor",
+    stock: 24,
+    categoria: "Refrigeración",
+    status: "Done",
+    price: 7800,
+    supplier: "Wahler",
+    lastUpdated: "24 Dic",
   },
   {
     id: 25,
-    header: "Disco de Freno Ventilado",
+    header: "Motor de Arranque",
+    stock: 6,
+    categoria: "Eléctricos",
+    status: "Pending",
+    price: 72000,
+    supplier: "Valeo",
+    lastUpdated: "23 Dic",
+  },
+  {
+    id: 26,
+    header: "Rodamiento Rueda Delantera",
+    stock: 13,
+    categoria: "Suspensión",
+    status: "Done",
+    price: 19500,
+    supplier: "SKF",
+    lastUpdated: "22 Dic",
+  },
+  {
+    id: 27,
+    header: "Sensor de Velocidad ABS",
+    stock: 9,
+    categoria: "Eléctricos",
+    status: "Pending",
+    price: 28500,
+    supplier: "Bosch",
+    lastUpdated: "21 Dic",
+  },
+  {
+    id: 28,
+    header: "Filtro Habitáculo Polen",
+    stock: 35,
+    categoria: "Filtros",
+    status: "Done",
+    price: 4500,
+    supplier: "Mann",
+    lastUpdated: "20 Dic",
+  },
+  {
+    id: 29,
+    header: "Bomba de Combustible Eléctrica",
+    stock: 5,
+    categoria: "Motor",
+    status: "Pending",
+    price: 62000,
+    supplier: "Bosch",
+    lastUpdated: "19 Dic",
+  },
+  {
+    id: 30,
+    header: "Silenciador Escape",
     stock: 7,
+    categoria: "Escape",
+    status: "Pending",
+    price: 48000,
+    supplier: "Walker",
+    lastUpdated: "18 Dic",
+  },
+  {
+    id: 31,
+    header: "Aceite Motor 10W-40 Mineral",
+    stock: 40,
+    categoria: "Lubricantes",
+    status: "Done",
+    price: 6800,
+    supplier: "Shell",
+    lastUpdated: "17 Dic",
+  },
+  {
+    id: 32,
+    header: "Bobina de Encendido",
+    stock: 12,
+    categoria: "Encendido",
+    status: "Done",
+    price: 24000,
+    supplier: "NGK",
+    lastUpdated: "16 Dic",
+  },
+  {
+    id: 33,
+    header: "Retén Cigüeñal Delantero",
+    stock: 27,
+    categoria: "Motor",
+    status: "Done",
+    price: 3200,
+    supplier: "Corteco",
+    lastUpdated: "15 Dic",
+  },
+  {
+    id: 34,
+    header: "Cilindro Maestro Freno",
+    stock: 4,
+    categoria: "Frenos",
+    status: "Pending",
+    price: 55000,
+    supplier: "TRW",
+    lastUpdated: "14 Dic",
+  },
+  {
+    id: 35,
+    header: "Lámpara H7 12V 55W",
+    stock: 50,
+    categoria: "Iluminación",
+    status: "Done",
+    price: 2500,
+    supplier: "Osram",
+    lastUpdated: "13 Dic",
+  },
+  {
+    id: 36,
+    header: "Rótula Dirección",
+    stock: 15,
+    categoria: "Dirección",
+    status: "Done",
+    price: 16500,
+    supplier: "TRW",
+    lastUpdated: "12 Dic",
+  },
+  {
+    id: 37,
+    header: "Ventilador Radiador",
+    stock: 6,
+    categoria: "Refrigeración",
+    status: "Pending",
+    price: 38000,
+    supplier: "Denso",
+    lastUpdated: "11 Dic",
+  },
+  {
+    id: 38,
+    header: "Cable Freno de Mano",
+    stock: 18,
     categoria: "Frenos",
     status: "Done",
-    price: 285000,
-    supplier: "Brembo",
-    lastUpdated: "16 Ene",
+    price: 12000,
+    supplier: "Ferodo",
+    lastUpdated: "10 Dic",
+  },
+  {
+    id: 39,
+    header: "Junta Homocinética",
+    stock: 8,
+    categoria: "Transmisión",
+    status: "Pending",
+    price: 45000,
+    supplier: "GKN",
+    lastUpdated: "09 Dic",
+  },
+  {
+    id: 40,
+    header: "Líquido de Frenos DOT4",
+    stock: 38,
+    categoria: "Lubricantes",
+    status: "Done",
+    price: 5500,
+    supplier: "Castrol",
+    lastUpdated: "08 Dic",
+  },
+  {
+    id: 41,
+    header: "Switch de Encendido",
+    stock: 10,
+    categoria: "Eléctricos",
+    status: "Done",
+    price: 18000,
+    supplier: "OEM",
+    lastUpdated: "07 Dic",
+  },
+  {
+    id: 42,
+    header: "Catalizador Universal",
+    stock: 3,
+    categoria: "Escape",
+    status: "Pending",
+    price: 125000,
+    supplier: "Walker",
+    lastUpdated: "06 Dic",
+  },
+  {
+    id: 43,
+    header: "Balata Freno Trasera",
+    stock: 21,
+    categoria: "Frenos",
+    status: "Done",
+    price: 9800,
+    supplier: "Ferodo",
+    lastUpdated: "05 Dic",
+  },
+  {
+    id: 44,
+    header: "Sensor Temperatura Motor",
+    stock: 14,
+    categoria: "Eléctricos",
+    status: "Done",
+    price: 8200,
+    supplier: "Bosch",
+    lastUpdated: "04 Dic",
+  },
+  {
+    id: 45,
+    header: "Cremallera Dirección",
+    stock: 2,
+    categoria: "Dirección",
+    status: "Pending",
+    price: 95000,
+    supplier: "TRW",
+    lastUpdated: "03 Dic",
+  },
+  {
+    id: 46,
+    header: "Tapa Radiador 1.1 Bar",
+    stock: 42,
+    categoria: "Refrigeración",
+    status: "Done",
+    price: 3800,
+    supplier: "Stant",
+    lastUpdated: "02 Dic",
+  },
+  {
+    id: 47,
+    header: "Resorte Suspensión Trasero",
+    stock: 11,
+    categoria: "Suspensión",
+    status: "Done",
+    price: 22000,
+    supplier: "Monroe",
+    lastUpdated: "01 Dic",
+  },
+  {
+    id: 48,
+    header: "Fusibles Mini Set 10 Pzas",
+    stock: 60,
+    categoria: "Eléctricos",
+    status: "Done",
+    price: 1500,
+    supplier: "Littelfuse",
+    lastUpdated: "30 Nov",
+  },
+  {
+    id: 49,
+    header: "Válvula PCV",
+    stock: 19,
+    categoria: "Motor",
+    status: "Done",
+    price: 6200,
+    supplier: "OEM",
+    lastUpdated: "29 Nov",
+  },
+  {
+    id: 50,
+    header: "Manguera Inferior Radiador",
+    stock: 26,
+    categoria: "Refrigeración",
+    status: "Done",
+    price: 4900,
+    supplier: "Gates",
+    lastUpdated: "28 Nov",
   },
 ];
 
@@ -288,27 +557,33 @@ interface StockIndicatorProps {
 const StockIndicator: React.FC<StockIndicatorProps> = ({ stock }) => {
   if (stock < 10) {
     return (
-      <div className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+      <Badge variant="destructive" className="gap-1.5">
         <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
         {stock} unid.
-      </div>
+      </Badge>
     );
   }
 
   if (stock < 20) {
     return (
-      <div className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+      <Badge
+        variant="destructive"
+        className="gap-1.5 bg-amber-100 text-amber-800 hover:bg-amber-100"
+      >
         <Clock className="h-3.5 w-3.5 flex-shrink-0" />
         {stock} unid.
-      </div>
+      </Badge>
     );
   }
 
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-md bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+    <Badge
+      variant="secondary"
+      className="gap-1.5 bg-green-100 text-green-800 hover:bg-green-100"
+    >
       <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
       {stock} unid.
-    </div>
+    </Badge>
   );
 };
 
@@ -329,18 +604,14 @@ const TableRow: React.FC<TableRowProps> = ({
   onDelete,
   className = "",
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <tr
       className={`border-b border-gray-200 transition-colors hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""} ${className}`}
     >
       <td className="px-4 py-3">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isSelected}
-          onChange={() => onToggleSelect(item.id)}
-          className="h-4 w-4 rounded border-gray-300"
+          onCheckedChange={() => onToggleSelect(item.id)}
           aria-label={`Select ${item.header}`}
         />
       </td>
@@ -355,7 +626,9 @@ const TableRow: React.FC<TableRowProps> = ({
         </div>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm text-gray-600">{item.categoria}</span>
+        <Badge variant="outline" className="text-xs">
+          {item.categoria}
+        </Badge>
       </td>
       <td className="px-4 py-3">
         <StockIndicator stock={item.stock} />
@@ -366,49 +639,30 @@ const TableRow: React.FC<TableRowProps> = ({
         </span>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm translate-x-[20px] block text-gray-600">
-          {item.supplier}
-        </span>
+        <span className="text-sm text-gray-600">{item.supplier}</span>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm translate-x-[25px] block text-gray-500">
-          {item.lastUpdated}
-        </span>
+        <span className="text-sm text-gray-500">{item.lastUpdated}</span>
       </td>
-      <td className="relative px-4 py-3 text-right">
-        <button
-          className="rounded p-1.5 transition-colors hover:bg-gray-100"
-          aria-label="Open actions menu"
-          type="button"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <MoreVertical className="h-4 w-4 text-gray-400" />
-        </button>
-        {isMenuOpen && (
-          <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
-            <button
-              type="button"
-              onClick={() => {
-                onEdit(item.id);
-                setIsMenuOpen(false);
-              }}
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 first:rounded-t-lg"
-            >
+      <td className="px-4 py-3 text-right">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(item.id)}>
               Editar
-            </button>
-            <div className="border-t border-gray-200" />
-            <button
-              type="button"
-              onClick={() => {
-                onDelete(item.id);
-                setIsMenuOpen(false);
-              }}
-              className="block w-full px-4 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 last:rounded-b-lg"
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(item.id)}
+              className="text-red-600 focus:text-red-600"
             >
               Eliminar
-            </button>
-          </div>
-        )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </td>
     </tr>
   );
@@ -449,6 +703,7 @@ const InventoryTable: React.FC = () => {
   );
 
   const handleEdit = (id: number) => console.log("Edit:", id);
+
   const handleDelete = (id: number) => console.log("Delete:", id);
 
   const handleToggleSelectAll = () => {
@@ -478,62 +733,131 @@ const InventoryTable: React.FC = () => {
               Gestiona tu stock de repuestos
             </p>
           </div>
-          <div className="flex gap-1">
-            <button className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800">
+          <div className="flex gap-2">
+            <Button className="gap-1">
               <Plus className="h-4 w-4" />
               Agregar Producto
-            </button>
-            <button className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800">
+            </Button>
+            <Button variant="outline" className="gap-1">
               <FileCheck className="h-4 w-4" />
               Export PDF
-            </button>
-            <button className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800">
+            </Button>
+            <Button variant="outline" className="gap-1">
               <FileText className="h-4 w-4" />
               Export CSV
-            </button>
+            </Button>
           </div>
         </div>
 
-        <div className="mb-6 space-y-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="flex-1">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
-                Buscar
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar producto o proveedor..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              {/* Search Input */}
+              <div className="flex-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                  Buscar
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar producto o proveedor..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(0);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div className="w-full sm:w-48">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                  Estado
+                </label>
+                <Select
+                  value={filterStatus}
+                  onValueChange={(value) => {
+                    setFilterStatus(value);
                     setCurrentPage(0);
                   }}
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm placeholder-gray-500 transition-colors focus:border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-300"
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos los estados" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos los estados</SelectItem>
+                    <SelectItem value="Done">Completado</SelectItem>
+                    <SelectItem value="Pending">Pendiente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Category Filter */}
+              <div className="w-full sm:w-48">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                  Categoría
+                </label>
+                <Select
+                  value={filterCategory}
+                  onValueChange={(value) => {
+                    setFilterCategory(value);
+                    setCurrentPage(0);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todas las categorías" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las categorías</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Clear Filters Button */}
+              <div className="w-full sm:w-auto">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2 opacity-0">
+                  Limpiar
+                </label>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setFilterStatus("all");
+                    setFilterCategory("all");
+                    setCurrentPage(0);
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  Limpiar Filtros
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="overflow-hidden rounded-xl border border-gray-200">
+        <div className="overflow-hidden rounded-lg border">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
+              <tr className="border-b bg-muted/50">
+                <th className="w-12 px-4 py-3">
+                  <Checkbox
                     checked={
                       selected.size === paginatedData.length &&
                       paginatedData.length > 0
                     }
-                    onChange={handleToggleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300"
+                    onCheckedChange={handleToggleSelectAll}
                     aria-label="Select all items"
                   />
                 </th>
-                <th className="px-4 py-3 text-center">
+                <th className="px-4 py-3 text-left">
                   <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
                     Producto
                   </span>
@@ -590,45 +914,41 @@ const InventoryTable: React.FC = () => {
             {selected.size} de {data.length} seleccionados
           </span>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(0)}
               disabled={currentPage === 0}
-              className="rounded p-2 transition-colors hover:bg-gray-100 disabled:opacity-50"
-              aria-label="First page"
             >
               <ChevronsLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 0}
-              className="rounded p-2 transition-colors hover:bg-gray-100 disabled:opacity-50"
-              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
-            </button>
+            </Button>
             <span className="px-2 text-sm font-medium text-gray-700">
               {currentPage + 1} de {totalPages}
             </span>
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages - 1}
-              className="rounded p-2 transition-colors hover:bg-gray-100 disabled:opacity-50"
-              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handlePageChange(totalPages - 1)}
               disabled={currentPage === totalPages - 1}
-              className="rounded p-2 transition-colors hover:bg-gray-100 disabled:opacity-50"
-              aria-label="Last page"
             >
               <ChevronsRight className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
