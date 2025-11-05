@@ -2,10 +2,10 @@ import { prisma, Prisma } from "@/lib/prisma";
 import { CreateSession, CustomSession } from "../types/models/entity";
 
 export const authRepository = {
-    async findById(identificacion: string): Promise<CustomSession | null> {
+    async findById(email: string): Promise<CustomSession | null> {
         try {
             return await prisma.session.findUnique({
-                where: { identificacion },
+                where: { email },
                 select: {
                     id: true,
                     name: true,

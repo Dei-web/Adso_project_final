@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { CreateSession } from '../../types/models/entity';
+import { CreateSession } from '../../../types/models/entity';
 import { createSession, updateById } from "@/app/backend/services/authServices";
 
 export async function POST(req: NextRequest) {

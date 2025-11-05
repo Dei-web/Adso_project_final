@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { CustomPieces } from '../../../types/models/entity';
-import { deletePiece, getPieceById, updateById } from "@/app/backend/services/piecesServices";
+import { deletePiece, updateById } from "@/app/backend/services/piecesServices";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
@@ -13,23 +13,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             { error: 'Ha ocurrido un error interno' },
             { status: 500 }
         );
-    }
-}
-
-export async function GET(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse<CustomPieces | { error: string }>> {
-    try {
-        const { id } = await params;
-        const data = await getPieceById(id);
-
-        return NextResponse.json(
-            data,
-            { status: 200 }
-        );
-    } catch {
-        return NextResponse.json(
-            { error: 'Ha ocurrido un error interno' },
-            { status: 500 }
-        )
     }
 }
 
