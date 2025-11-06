@@ -1,25 +1,30 @@
 import { authRepository } from "../repository/authRepository";
-import { CreateSession, ReturnSession } from "../types/models/entity";
-import { hashed, verifyHash } from "./argonService";
+import { CreateSession } from "../types/models/entity";
+import { hashed, verifyHash } from "../../../lib/argon";
+import { generateToken } from "@/lib/jwt";
 
-export async function getSessionById(email: string, password: string): Promise<ReturnSession> {
-    const data = await authRepository.findById(email);
+export async function getSessionById(email: string, password: string) {
+    const user = await authRepository.findById(email);
 
-    if (!data) {
+    if (!user) {
         throw new Error("No hay usuarios disponibles");
     }
 
-    if (!data.credentials) {
+    if (!user.credentials) {
         throw new Error("El usuario no tiene credenciales asociadas");
     }
 
-    const parsePass = await verifyHash(data.credentials.password, password);
+    const parsePass = await verifyHash(user.credentials.password, password);
 
     if (!parsePass) {
         throw new Error("Contraseña incorrecta");
     }
 
-    return data;
+    const { credentials, ...userWithoutPassword } = user;
+
+    const token = generateToken(userWithoutPassword);
+
+    return { token, userWithoutPassword };
 }
 
 export async function sessionExist(emailSession: string): Promise<boolean> {

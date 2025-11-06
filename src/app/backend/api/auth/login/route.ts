@@ -6,10 +6,10 @@ export async function POST(request: NextRequest) {
         const getSession = await request.json();
         const email = await getSession.email;
         const pass = await getSession.password;
-        const data = await getSessionById(email, pass);
+        const token = await getSessionById(email, pass);
 
         return NextResponse.json(
-            data,
+            token,
             { status: 200 }
         );
     } catch {
