@@ -1,10 +1,10 @@
-import { prisma, Prisma } from "@/lib/prisma";
-import { CustomPieces, ModifyPieces } from "../types/models/entity";
+import { prisma, Prisma } from '@/lib/prisma';
+import { ModifyCategory, PieceCategory } from '../types/models/entity';
 
-export const piecesRepository = {
-    async findMany(): Promise<CustomPieces[]> {
+export const categoryRepository = {
+    async findMany(): Promise<PieceCategory[]> {
         try {
-            return await prisma.pieces.findMany();
+            return await prisma.pieceCategory.findMany();
         } catch {
             throw new Error("Error en la busqueda de campos");
         }
@@ -12,7 +12,7 @@ export const piecesRepository = {
 
     async findById(id: number) {
         try {
-            return await prisma.pieces.findUnique({
+            return await prisma.pieceCategory.findUnique({
                 where: { id }
             });
         } catch {
@@ -20,33 +20,32 @@ export const piecesRepository = {
         }
     },
 
-    async create(pieces: ModifyPieces) {
+    async create(pieces: ModifyCategory) {
         try {
-            return await prisma.pieces.create({
+            return await prisma.pieceCategory.create({
                 data: {
                     ...pieces
                 }
             });
-        } catch (error) {
-            console.log(error)
+        } catch {
             throw new Error("Error en la creacion de nuevos campos");
         }
     },
 
-    async update(id: number, data: Prisma.PiecesUpdateInput) {
+    async update(id: number, data: Prisma.PieceCategoryUpdateInput) {
         try {
-            return await prisma.pieces.update({
+            return await prisma.pieceCategory.update({
                 where: { id },
                 data
             });
-        } catch (error) {
-            throw new Error("Error en la actualizacion de campos"+ error);
+        } catch {
+            throw new Error("Error en la actualizacion de campos");
         }
     },
 
     async delete(id: number) {
         try {
-            return await prisma.pieces.delete({
+            return await prisma.pieceCategory.delete({
                 where: { id }
             })
         } catch {

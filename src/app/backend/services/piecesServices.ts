@@ -12,6 +12,11 @@ export async function getPieces (): Promise<CustomPieces[]> {
 }
 
 export async function getPieceById(id: string): Promise<CustomPieces> {
+    if (!id) {
+        throw new Error("No se ha suministrado un parametron valido");
+    }
+
+
     const pieceId = parseInt(id, 10);
 
     const data = await piecesRepository.findById(pieceId);
@@ -45,6 +50,10 @@ function cleanData<T extends Record<string, unknown>>(data: T): Partial<T> {
 }
 
 export async function updateById<T extends Record<string, unknown>> (id: string, input: T) {
+    if (!id) {
+        throw new Error("No se ha suministrado un parametro valido");
+    }
+    
     const pieceId = parseInt(id, 10);
     const data = cleanData(input);
 

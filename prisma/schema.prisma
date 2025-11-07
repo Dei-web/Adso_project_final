@@ -1,16 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Session {
-  id             Int          @id @default(autoincrement())
-  name           String
-  identificacion String       @unique
-  email          String       @unique
-  role           TypeAccount  @default(MECANICO)
-  createdAt      DateTime     @default(now())
-  credentials    Credentials? @relation("SessionCredentials")
+  id                  Int                     @id @default(autoincrement())
+  name                String
+  identificacion      String                  @unique
+  email               String                  @unique
+  role                TypeAccount             @default(MECANICO)
+  createdAt           DateTime                @default(now())
+  appointmentEmployed AppointmentScheduling[] @relation("employedSession")
+  credentials         Credentials?            @relation("SessionCredentials")
 }
 
 model Credentials {
@@ -39,7 +44,7 @@ model ClientContact {
   id          Int      @id @default(autoincrement())
   phoneNumber String   @db.VarChar(20)
   email       String   @db.VarChar(50)
-  address     String   @db.VarChar(50)
+  address     String?  @db.VarChar(50)
   createAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
   clientId    Int
@@ -51,9 +56,11 @@ model AppointmentScheduling {
   appointmentDate  DateTime
   ubicacion        String           @db.VarChar(50)
   appointmentState AppointmentState @default(ASIGNADA)
-  details          String
+  details          String?
   clientId         Int
+  employedId       Int
   author           Client           @relation("clientAppointment", fields: [clientId], references: [id])
+  employedAuthor   Session          @relation("employedSession", fields: [employedId], references: [id])
 }
 
 model ClientVehicle {
@@ -128,7 +135,6 @@ model Pieces {
   informationPieces       InformationPieces[]       @relation("pieceMore_information")
   invoiceDetail           InvoiceDetail[]           @relation("piece_invoiceDetail")
   pieceCategory           PieceCategory             @relation("pieceCategory", fields: [categoryId], references: [id])
-  ubicationPiece          UbicationPiece            @relation("pieceUbication", fields: [ubicationId], references: [id])
 }
 
 model InformationPieces {
@@ -144,13 +150,6 @@ model PieceCategory {
   description String
   createAt    DateTime @default(now())
   pieces      Pieces[] @relation("pieceCategory")
-}
-
-model UbicationPiece {
-  id        Int      @id @default(autoincrement())
-  ubication String   @db.VarChar(50)
-  createAt  DateTime @default(now())
-  piece     Pieces[] @relation("pieceUbication")
 }
 
 model AvailablePieces_vehicle {

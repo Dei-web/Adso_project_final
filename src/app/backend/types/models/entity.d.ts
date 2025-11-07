@@ -80,6 +80,25 @@ export interface Client {
   clientInvoice?: Invoice[];
 }
 
+export interface CreateClient {
+  fullName: string;
+  fullSurname: string;
+  identified: string;
+  clientState?: boolean;
+  phoneNumber: string;
+  email: string;
+  address: string;
+}
+
+export interface ModifyClient {
+  clientState?: boolean;
+  clientcontact: {
+    phoneNumber: string;
+    email: string;
+    address: string;
+  } | null;
+}
+
 export interface ClientContact {
   id: number;
   phoneNumber: string;
@@ -97,8 +116,27 @@ export interface AppointmentScheduling {
   ubicacion: string;
   appointmentState: AppointmentState;
   details: string;
+  employedId: number;
   clientId: number;
+  authorEmployed: Session;
   author: Client;
+}
+
+export interface CreateAppointment {
+  appointmentDate: Date;
+  ubicacion: string;
+  appointmentState: AppointmentState;
+  details?: string;
+  employedId: number;
+  clientId: number;
+}
+
+export interface ModifyAppointMent {
+  appointmentDate?: Date;
+  ubicacion?: string;
+  appointmentState?: AppointmentState;
+  details?: string;
+  employedId?: number;
 }
 
 export interface ClientVehicle {
@@ -114,6 +152,24 @@ export interface ClientVehicle {
   author: Client;
 }
 
+export interface CreateVehicle {
+  brand: string;
+  model: string;
+  year: Date;
+  engineDisplacement: number;
+  description?: string;
+  clientId: number;
+}
+
+export interface ModifyVehicle {
+  brand?: string;
+  model?: string;
+  year?: Date;
+  engineDisplacement?: number;
+  description?: string;
+  clientId?: number;
+}
+
 export interface Invoice {
   id: number;
   createAt: Date;
@@ -121,6 +177,20 @@ export interface Invoice {
   clientId: number;
   author: Client;
   invoiceDetail?: InvoiceDetail;
+}
+
+export interface CreateInvoice {
+  total: Decimal;
+  clientId: number;
+  invoicedetail: {
+    amount: number;
+    subtotal: Decimal;
+    extra: Decimal;
+    description?: string;
+    pieceId?: number;
+    invoiceDetail_id?: number;
+    serviceId?: number;
+  } | null
 }
 
 export interface InvoiceDetail {
@@ -148,6 +218,21 @@ export interface Services {
   guarantee: string;
   invoiceDetail?: InvoiceDetail[];
   author: ServiceCategory;
+}
+
+export interface CreateService {
+  name: string;
+  description?: string;
+  price: Decimal; // Decimal
+  serviceCategory_id: number;
+  guarantee?: string;
+}
+
+export interface ModifyService {
+  name?: string;
+  description?: string;
+  price?: Decimal; // Decimal
+  guarantee?: string;
 }
 
 export interface ServiceCategory {
@@ -186,11 +271,9 @@ export interface ModifyPieces {
   ubicationId: number;
 }
 
-export interface InformationPieces {
-  id: number;
-  dateOf_entry: Date;
-  moreInformation_id: number;
-  author: Pieces;
+export interface ModifyCategory {
+  name: string;
+  description: string;
 }
 
 export interface PieceCategory {
@@ -201,11 +284,11 @@ export interface PieceCategory {
   pieces?: Pieces[];
 }
 
-export interface UbicationPiece {
+export interface InformationPieces {
   id: number;
-  ubication: string;
-  createAt: Date;
-  piece?: Pieces[];
+  dateOf_entry: Date;
+  moreInformation_id: number;
+  author: Pieces;
 }
 
 export interface AvailablePieces_vehicle {

@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import { CustomPieces } from '../../../types/models/entity';
 import { deletePiece, updateById } from "@/app/backend/services/piecesServices";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
