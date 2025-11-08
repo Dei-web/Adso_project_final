@@ -128,7 +128,6 @@ model Pieces {
   estado                  PieceState                @default(DISPONIBLE)
   stock                   Int
   categoryId              Int
-  ubicationId             Int
   createAt                DateTime                  @default(now())
   updatedAt               DateTime                  @updatedAt
   availablePieces_vehicle AvailablePieces_vehicle[] @relation("pieceVehicle")
@@ -139,7 +138,9 @@ model Pieces {
 
 model InformationPieces {
   id                 Int      @id @default(autoincrement())
-  dateOf_entry       DateTime
+  pieceName          String
+  stockEntry         Int
+  dateOf_entry       DateTime @default(now())
   moreInformation_id Int
   author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id])
 }
@@ -153,11 +154,13 @@ model PieceCategory {
 }
 
 model AvailablePieces_vehicle {
-  id               Int    @id @default(autoincrement())
-  brand            String @db.VarChar(20)
-  model            String @db.VarChar(20)
+  id               Int      @id @default(autoincrement())
+  brand            String   @db.VarChar(20)
+  model            String   @db.VarChar(20)
   pieceVehiculo_id Int
-  author           Pieces @relation("pieceVehicle", fields: [pieceVehiculo_id], references: [id])
+  createAt         DateTime @default(now())
+  createUpdate     DateTime @updatedAt
+  author           Pieces   @relation("pieceVehicle", fields: [pieceVehiculo_id], references: [id])
 }
 
 model Suppliers {

@@ -1,7 +1,23 @@
 import { prisma, Prisma } from "@/lib/prisma";
-import { CreateSession, ReturnCredentials, ReturnSession } from "../types/models/entity";
+import { CreateSession, CustomSession, ReturnCredentials, ReturnSession } from "../types/models/entity";
+import { selectFields } from "../utils/filtersRepository";
 
 export const authRepository = {
+    async findMany(): Promise<CustomSession[] | null> {
+        try {
+            return await prisma.session.findMany({
+                select: {
+                  id: true,
+                  name: true,
+                  identificacion: true,
+                  email: true 
+                }
+            });
+        } catch {
+            throw new Error("Ha ocurrido un error inesperado en la consulta de campos");
+        }
+    },
+
     async findById(email: string): Promise<ReturnSession | null> {
         try {
             return await prisma.session.findFirst({
@@ -73,7 +89,7 @@ export const authRepository = {
         }
     },
 
-    async update(email: string, data: Record<string, unknown>) {
+    async update(email: string, data: Record<string, unknown>): Promise<boolean> {
         try {
             const sessionData: Record<string, unknown> = {};
             const credentialsData: Record<string, unknown> = {};
@@ -98,11 +114,12 @@ export const authRepository = {
                     : {}),
             };
 
-            return await prisma.session.update({
+            const result = await prisma.session.update({
                 where: { email },
-                data: prismaData,
-                include: { credentials: true }
+                data: prismaData
             });
+
+            return typeof result === "object";
         } catch {
             throw new Error("Error en la actualizacion de campos");
         }

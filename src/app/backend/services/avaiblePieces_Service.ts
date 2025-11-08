@@ -1,8 +1,7 @@
 import { categoryRepository } from "../repository/categoryRepository";
 import { ModifyCategory, PieceCategory } from "../types/models/entity";
-import { cleanData } from "../utils/cleanData";
 
-export async function getCategory(): Promise<PieceCategory[]> {
+export async function getAvaible(): Promise<PieceCategory[]> {
     const data = await categoryRepository.findMany();
 
     if (!data.length) {
@@ -32,19 +31,26 @@ export async function createCategory(newCategory: ModifyCategory) {
     return await categoryRepository.create(newCategory);
 }
 
+function cleanData<T extends Record<string, unknown>>(data: T): Partial<T> {
+    const cleaned = Object.fromEntries(
+        Object.entries(data).filter(([__, v]) => v !== undefined)
+    );
+    return cleaned as Partial<T>;
+}
+
 export async function updateById<T extends Record<string, unknown>>(id: string, input: T) {
     if (!id) {
         throw new Error("No se ha suministrado un parametro valido");
     }
 
     const categoryId = parseInt(id, 10);
-    const data = cleanData.arrays_objects(input);
+    const data = cleanData(input);
 
     if (Object.keys(data).length === 0) {
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await categoryRepository.update(categoryId, data);
+    return await categoryRepository.update(categoryId, input);
 }
 
 export async function deleteById(id: string) {

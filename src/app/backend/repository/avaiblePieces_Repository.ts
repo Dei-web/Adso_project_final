@@ -1,11 +1,10 @@
 import { prisma, Prisma } from '@/lib/prisma';
-import { ModifyCategory, PieceCategory } from '../types/models/entity';
-import { selectFields } from '../utils/filtersRepository';
+import { AvailablePieces_vehicle, Create_AvailablePieces } from '../types/models/entity';
 
-export const categoryRepository = {
-    async findMany(): Promise<PieceCategory[]> {
+export const avaibleRepository = {
+    async findMany(): Promise<AvailablePieces_vehicle[]> {
         try {
-            return await prisma.pieceCategory.findMany();
+            return await prisma.availablePieces_vehicle.findMany();
         } catch {
             throw new Error("Error en la busqueda de campos");
         }
@@ -35,13 +34,10 @@ export const categoryRepository = {
     },
 
     async update(id: number, data: Prisma.PieceCategoryUpdateInput) {
-        const dataReturn = selectFields(data);
-
         try {
             return await prisma.pieceCategory.update({
                 where: { id },
-                data,
-                select: dataReturn
+                data
             });
         } catch {
             throw new Error("Error en la actualizacion de campos");

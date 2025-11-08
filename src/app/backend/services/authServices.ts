@@ -2,12 +2,23 @@ import { authRepository } from "../repository/authRepository";
 import { CreateSession } from "../types/models/entity";
 import { hashed, verifyHash } from "../../../lib/argon";
 import { generateToken } from "@/lib/jwt";
+import { cleanData } from "../utils/cleanData";
+
+export async function getAllSessions() {
+    const users = await authRepository.findMany();
+
+    if (!users) {
+        throw new Error("No hay usuarios disponibles");
+    }
+
+    return users;
+}
 
 export async function getSessionById(email: string, password: string) {
     const user = await authRepository.findById(email);
 
     if (!user) {
-        throw new Error("No hay usuarios disponibles");
+        throw new Error("No se encontro el usuario asociado");
     }
 
     if (!user.credentials) {
@@ -44,19 +55,12 @@ export async function createSession(newSession: CreateSession) {
     return await authRepository.createSession(dataSession);
 }
 
-function cleanData<T extends Record<string, unknown>>(data: T): Partial<T> {
-    const cleaned = Object.fromEntries(
-        Object.entries(data).filter(([__, v]) => v !== undefined)
-    );
-    return cleaned as Partial<T>;
-}
-
-export async function updateById<T extends Record<string, unknown>> (email: string, input: T) {
-    const data = cleanData(input);
+export async function updateById<T extends Record<string, unknown>>(email: string, input: T): Promise<boolean> {
+    const data = cleanData.arrays(input);
 
     if (Object.keys(data).length === 0) {
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await authRepository.update(email, input);
+    return await authRepository.update(email, data);
 }

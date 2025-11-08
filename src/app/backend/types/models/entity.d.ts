@@ -63,7 +63,6 @@ export interface CustomSession {
   identificacion: string;
   email: string;
   role: TypeAccount;
-  credentials: { password: string } | null;
 }
 
 export interface Client {
@@ -251,7 +250,6 @@ export interface CustomPieces {
   estado: PieceState;
   stock: number;
   categoryId: number;
-  ubicationId: number;
   createAt: Date;
   updatedAt: Date;
   availablePieces_vehicle?: AvailablePieces_vehicle[];
@@ -261,14 +259,25 @@ export interface CustomPieces {
   ubicationPiece?: UbicationPiece;
 }
 
-export interface ModifyPieces {
+export interface CreatePieces {
   name: string;
   description: string;
   price: Decimal;
-  estado: PieceState;
   stock: number;
   categoryId: number;
-  ubicationId: number;
+  availableVehicle: {
+    brand: string,
+    model: string
+  }
+}
+
+export interface ModifyPieces {
+  name?: string;
+  description?: string;
+  price?: Decimal;
+  estado?: PieceState;
+  stock?: number;
+  categoryId?: number;
 }
 
 export interface ModifyCategory {
@@ -296,7 +305,15 @@ export interface AvailablePieces_vehicle {
   brand: string;
   model: string;
   pieceVehiculo_id: number;
-  author: Pieces;
+  createAt: Date;
+  createUpdate: Date;
+  author?: Pieces;
+}
+
+export interface Create_AvailablePieces {
+  brand: string;
+  model: string;
+  pieceVehiculo_id: number;
 }
 
 export interface Suppliers {

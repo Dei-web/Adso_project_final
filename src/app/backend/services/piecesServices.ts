@@ -1,7 +1,8 @@
 import { piecesRepository } from "../repository/piecesRepository";
-import { CustomPieces, ModifyPieces } from "../types/models/entity";
+import { CustomPieces, CreatePieces } from "../types/models/entity";
+import { cleanData } from "../utils/cleanData";
 
-export async function getPieces (): Promise<CustomPieces[]> {
+export async function getPieces(): Promise<CustomPieces[]> {
     const data = await piecesRepository.findMany();
 
     if (!data.length) {
@@ -28,11 +29,11 @@ export async function getPieceById(id: string): Promise<CustomPieces> {
     return data;
 }
 
-export async function createPiece (newPiece: ModifyPieces) {
+export async function createPiece(newPiece: CreatePieces) {
     return await piecesRepository.create(newPiece);
 }
 
-export async function deletePiece (id: string) {
+export async function deletePiece(id: string) {
     const pieceId = parseInt(id, 10);
 
     if (!piecesRepository.findById(pieceId)) {
@@ -42,24 +43,17 @@ export async function deletePiece (id: string) {
     return piecesRepository.delete(pieceId);
 }
 
-function cleanData<T extends Record<string, unknown>>(data: T): Partial<T> {
-    const cleaned = Object.fromEntries(
-        Object.entries(data).filter(([__, v]) => v !== undefined)
-    );
-    return cleaned as Partial<T>;
-}
-
-export async function updateById<T extends Record<string, unknown>> (id: string, input: T) {
+export async function updateById<T extends Record<string, unknown>>(id: string, input: T) {
     if (!id) {
         throw new Error("No se ha suministrado un parametro valido");
     }
-    
+
     const pieceId = parseInt(id, 10);
-    const data = cleanData(input);
+    const data = cleanData.arrays(input);
 
     if (Object.keys(data).length === 0) {
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await piecesRepository.update(pieceId, input);
+    return await piecesRepository.update(pieceId, data);
 }
