@@ -1,11 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getAllSessions, sessionExist } from "@/app/backend/services/authServices";
-import { CustomSession } from "@/app/backend/types/models/entity";
+import { GetSession } from "@/app/backend/types/models/entity";
 
 export async function POST(request: NextRequest) {
     try {
         const getSession = await request.json();
-        const email = await getSession.email;
+        const email = await getSession.email as string;
         const user = await sessionExist(email);
 
         return NextResponse.json(
@@ -15,17 +15,17 @@ export async function POST(request: NextRequest) {
     } catch {
         return NextResponse.json(
             { error: 'Ha ocurrido un error interno' },
-            { status: 500 }            
+            { status: 500 }
         )
     }
 }
 
-export async function GET(): Promise<NextResponse<CustomSession[] | { error: string }>> {
+export async function GET(): Promise<NextResponse<GetSession[] | { error: string }>> {
     try {
         const users = await getAllSessions();
 
         return NextResponse.json(
-            users,
+            users ?? [],
             { status: 200 }
         );
     } catch {

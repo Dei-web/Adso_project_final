@@ -1,16 +1,16 @@
 import { prisma, Prisma } from "@/lib/prisma";
-import { CreateSession, CustomSession, ReturnCredentials, ReturnSession } from "../types/models/entity";
-import { selectFields } from "../utils/filtersRepository";
+import { GetCredentials, GetSession, ReturnSession } from "../types/models/entity";
+import { toAuthCreateInput } from "../mappers/authMapper";
 
 export const authRepository = {
-    async findMany(): Promise<CustomSession[] | null> {
+    async findMany(): Promise<GetSession[] | null> {
         try {
             return await prisma.session.findMany({
                 select: {
-                  id: true,
-                  name: true,
-                  identificacion: true,
-                  email: true 
+                    id: true,
+                    name: true,
+                    identificacion: true,
+                    email: true
                 }
             });
         } catch {
@@ -35,12 +35,13 @@ export const authRepository = {
                     }
                 }
             });
-        } catch {
+        } catch (error) {
+            console.log(error)
             throw new Error("Error al consultar usuario");
         }
     },
 
-    async getPass(email: string): Promise<ReturnCredentials | null> {
+    async getPass(email: string): Promise<GetCredentials | null> {
         try {
             return await prisma.session.findUnique({
                 where: { email },
@@ -58,10 +59,10 @@ export const authRepository = {
         }
     },
 
-    async getSession(emailSession: string): Promise<boolean> {
+    async existSessionByEmail(email: string): Promise<boolean> {
         try {
             const count = await prisma.session.count({
-                where: { email: emailSession }
+                where: { email: email }
             });
 
             return count > 0;
@@ -70,18 +71,24 @@ export const authRepository = {
         }
     },
 
-    async createSession(data: CreateSession) {
+    async existSessionById(id: number): Promise<boolean> {
+        try {
+            const count = await prisma.session.count({
+                where: { id: id }
+            });
+
+            return count > 0;
+        } catch {
+            throw new Error("Error al consultar usuario");
+        }
+    },
+
+    async createSession(data: Record<string, unknown>): Promise<Record<string, unknown> | null> {
         try {
             return await prisma.session.create({
-                data: {
-                    name: data.name,
-                    identificacion: data.identificacion,
-                    email: data.email,
-                    credentials: {
-                        create: {
-                            password: data.password
-                        }
-                    }
+                data: toAuthCreateInput(data),
+                select: {
+                    name: true
                 }
             });
         } catch {
@@ -122,6 +129,19 @@ export const authRepository = {
             return typeof result === "object";
         } catch {
             throw new Error("Error en la actualizacion de campos");
+        }
+    },
+
+    async delete(id: number): Promise<boolean> {
+        try {
+            const eliminated = await prisma.session.delete({
+                where: { id }
+            });
+
+            return eliminated ? true : false;
+        } catch (error) {
+            console.log(error)
+            throw new Error("Error en la eliminacion de campos");
         }
     }
 }

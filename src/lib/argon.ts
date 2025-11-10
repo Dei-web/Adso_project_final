@@ -12,6 +12,6 @@ export async function hashed(value: string): Promise<string> {
     return await argon2.hash(value, ARGON2_OPTIONS);
 }
 
-export async function verifyHash(value: string, candidate: string): Promise<boolean> {
-    return await argon2.verify(value, candidate);
+export async function verifyHash(hash: string, plainText: string): Promise<boolean> {
+    return await argon2.verify(hash, plainText);
 }

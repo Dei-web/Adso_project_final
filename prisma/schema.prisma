@@ -23,7 +23,7 @@ model Credentials {
   password  String
   updatedAt DateTime @updatedAt
   sessionId Int      @unique
-  author    Session  @relation("SessionCredentials", fields: [sessionId], references: [id])
+  author    Session  @relation("SessionCredentials", fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model Client {
@@ -102,12 +102,12 @@ model InvoiceDetail {
 model Services {
   id                 Int             @id @default(autoincrement())
   name               String          @db.VarChar(50)
-  description        String
+  description        String?
   price              Decimal         @db.Decimal(15, 2)
   createAt           DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
   serviceCategory_id Int
-  guarantee          String
+  guarantee          String?
   invoiceDetail      InvoiceDetail[] @relation("clientService")
   author             ServiceCategory @relation("serviceCategory", fields: [serviceCategory_id], references: [id])
 }
@@ -123,7 +123,7 @@ model ServiceCategory {
 model Pieces {
   id                      Int                       @id @default(autoincrement())
   name                    String                    @db.VarChar(30)
-  description             String
+  description             String?
   price                   Decimal                   @db.Decimal(15, 2)
   estado                  PieceState                @default(DISPONIBLE)
   stock                   Int
@@ -142,7 +142,7 @@ model InformationPieces {
   stockEntry         Int
   dateOf_entry       DateTime @default(now())
   moreInformation_id Int
-  author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id])
+  author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id], onDelete: Cascade)
 }
 
 model PieceCategory {

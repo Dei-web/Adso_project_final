@@ -17,6 +17,10 @@ export async function getCategoryById(id: string): Promise<PieceCategory> {
         throw new Error("No se ha suministrado un parametro valido");
     }
 
+    if (isNaN(Number(id))) {
+        throw new Error("Identificador no valido para la eliminacion de campos");
+    }
+
     const pieceId = parseInt(id, 10);
 
     const data = await categoryRepository.findById(pieceId);
@@ -37,6 +41,10 @@ export async function updateById<T extends Record<string, unknown>>(id: string, 
         throw new Error("No se ha suministrado un parametro valido");
     }
 
+    if (isNaN(Number(id))) {
+        throw new Error("Identificador no valido para la eliminacion de campos");
+    }
+
     const categoryId = parseInt(id, 10);
     const data = cleanData.arrays_objects(input);
 
@@ -50,6 +58,10 @@ export async function updateById<T extends Record<string, unknown>>(id: string, 
 export async function deleteById(id: string) {
     if (!id) {
         throw new Error("No se ha suministrado un parametro valido");
+    }
+
+    if (isNaN(Number(id))) {
+        throw new Error("Identificador no valido para la eliminacion de campos");
     }
 
     const categoryId = parseInt(id, 10);

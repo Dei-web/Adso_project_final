@@ -1,4 +1,5 @@
 import { Decimal } from "decimal.js";
+import { prisma, Prisma } from "@/lib/prisma";
 import type { PieceState, TypeAccount } from '@prisma/client';
 
 export enum TypeSuppliers {
@@ -36,34 +37,40 @@ export enum AppointmentState {
 
 /* ========================= MODELS ========================= */
 
-export interface CreateSession {
-  name: string;
-  identificacion: string;
-  email: string;
-  password: string;
-}
+type GetSession = Prisma.SessionGetPayload<{
+  select: {
+    id: number;
+    name: string;
+    identificacion: string;
+    email: string;
+  }
+}>
 
-export interface ReturnSession {
-  id: number;
-  name: string;
-  identificacion: string;
-  email: string;
-  role: string;
-  credentials: { password: string } | null;
-}
+type ReturnSession = Prisma.SessionGetPayload<{
+  select: {
+    id: number;
+    name: string;
+    identificacion: string;
+    email: string;
+    role: string;
+    credentials: {
+      select: {
+        password: string;
+      }
+    }
+  }
+}>
 
-export interface ReturnCredentials {
-  id: number;
-  credentials: { password: string } | null;
-}
-
-export interface CustomSession {
-  id: number;
-  name: string;
-  identificacion: string;
-  email: string;
-  role: TypeAccount;
-}
+type GetCredentials = Prisma.SessionGetPayload<{
+  select: {
+    id: number;
+    credentials: {
+      select: {
+        password: string;
+      }
+    }
+  }
+}>
 
 export interface Client {
   id: number;
@@ -206,33 +213,15 @@ export interface InvoiceDetail {
   purchasedService: Services;
 }
 
-export interface Services {
-  id: number;
-  name: string;
-  description: string;
-  price: Decimal; // Decimal
-  createAt: Date;
-  updatedAt: Date;
-  serviceCategory_id: number;
-  guarantee: string;
-  invoiceDetail?: InvoiceDetail[];
-  author: ServiceCategory;
-}
-
-export interface CreateService {
-  name: string;
-  description?: string;
-  price: Decimal; // Decimal
-  serviceCategory_id: number;
-  guarantee?: string;
-}
-
-export interface ModifyService {
-  name?: string;
-  description?: string;
-  price?: Decimal; // Decimal
-  guarantee?: string;
-}
+type GetServices = Prisma.ServicesGetPayload<{
+  select: {
+    id: true,
+    name: true,
+    description: true,
+    price: true,
+    guarantee: true
+  }
+}>
 
 export interface ServiceCategory {
   id: number;
@@ -242,43 +231,21 @@ export interface ServiceCategory {
   services?: Services[];
 }
 
-export interface CustomPieces {
-  id: number;
-  name: string;
-  description: string;
-  price: Decimal; // Decimal
-  estado: PieceState;
-  stock: number;
-  categoryId: number;
-  createAt: Date;
-  updatedAt: Date;
-  availablePieces_vehicle?: AvailablePieces_vehicle[];
-  informationPieces?: InformationPieces[];
-  invoiceDetail?: InvoiceDetail[];
-  pieceCategory?: PieceCategory;
-  ubicationPiece?: UbicationPiece;
-}
-
-export interface CreatePieces {
-  name: string;
-  description: string;
-  price: Decimal;
-  stock: number;
-  categoryId: number;
-  availableVehicle: {
-    brand: string,
-    model: string
+type GetPieces = Prisma.PiecesGetPayload<{
+  select: {
+    id: true,
+    name: true,
+    description: true,
+    price: true,
+    estado: true,
+    stock: true,
+    pieceCategory: {
+      select: {
+        name: true
+      }
+    }
   }
-}
-
-export interface ModifyPieces {
-  name?: string;
-  description?: string;
-  price?: Decimal;
-  estado?: PieceState;
-  stock?: number;
-  categoryId?: number;
-}
+}>
 
 export interface ModifyCategory {
   name: string;

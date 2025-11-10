@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { deleteById, updateById, getCategoryById } from "@/app/backend/services/categoryService";
-import { PieceCategory, ModifyCategory } from "@/app/backend/types/models/entity";
+import { PieceCategory } from "@/app/backend/types/models/entity";
 
 export async function GET(request: NextResponse, { params }: { params: { id: string } }): Promise<NextResponse<PieceCategory | { error: string }>> {
     try {

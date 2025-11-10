@@ -1,13 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
-import { deletePiece, updateById } from "@/app/backend/services/piecesServices";
+import { deletePiece, getPieceById, updateById } from "@/app/backend/services/piecesServices";
+import { GetPieces } from "@/app/backend/types/models/entity";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = await params;
-        const data = await deletePiece(id);
+        const piece = await deletePiece(id);
 
-        return NextResponse.json(data, { status: 200 })
-    } catch {
+        return NextResponse.json(piece, { status: 200 })
+    } catch (error) {
+        console.log(error)
         return NextResponse.json(
             { error: 'Ha ocurrido un error interno' },
             { status: 500 }
@@ -19,10 +21,27 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     try {
         const newPieces = await request.json();
         const { id } = await params;
-        const data = updateById(id, newPieces);
+        const piece = await updateById(id, newPieces);
 
         return NextResponse.json(
-            data,
+            piece,
+            { status: 200 }
+        )
+    } catch {
+        return NextResponse.json(
+            { error: 'Ha ocurrido un error interno' },
+            { status: 500 }
+        )
+    }
+}
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse<GetPieces | { error: string } | null>> {
+    try {
+        const { id } = await params;
+        const piece = await getPieceById(id);
+
+        return NextResponse.json(
+            piece,
             { status: 200 }
         )
     } catch {

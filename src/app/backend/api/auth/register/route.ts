@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
-import { CreateSession } from '../../../types/models/entity';
+import { Prisma } from "@prisma/client";
 import { createSession } from "@/app/backend/services/authServices";
 
 export async function POST(req: NextRequest) {
     try {
-        const body: CreateSession = await req.json();
+        const body: Prisma.SessionCreateInput = await req.json();
 
         const data = await createSession(body);
 

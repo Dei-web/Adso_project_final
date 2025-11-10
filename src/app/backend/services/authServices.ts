@@ -1,10 +1,11 @@
 import { authRepository } from "../repository/authRepository";
-import { CreateSession } from "../types/models/entity";
 import { hashed, verifyHash } from "../../../lib/argon";
 import { generateToken } from "@/lib/jwt";
 import { cleanData } from "../utils/cleanData";
+import { GetSession } from "../types/models/entity";
+import { toLowerCaseDeepRecord } from "../utils/filtersRepository"
 
-export async function getAllSessions() {
+export async function getAllSessions(): Promise<GetSession[] | null> {
     const users = await authRepository.findMany();
 
     if (!users) {
@@ -14,7 +15,7 @@ export async function getAllSessions() {
     return users;
 }
 
-export async function getSessionById(email: string, password: string) {
+export async function getSessionById(email: string, password: string): Promise<Record<string, unknown>> {
     const user = await authRepository.findById(email);
 
     if (!user) {
@@ -39,7 +40,7 @@ export async function getSessionById(email: string, password: string) {
 }
 
 export async function sessionExist(emailSession: string): Promise<boolean> {
-    const success = await authRepository.getSession(emailSession);
+    const success = await authRepository.existSessionByEmail(emailSession);
 
     if (!success) {
         throw new Error("No se encontro el usuario consultado");
@@ -48,19 +49,55 @@ export async function sessionExist(emailSession: string): Promise<boolean> {
     return success;
 }
 
-export async function createSession(newSession: CreateSession) {
+export async function createSession(newSession: Record<string, unknown>) {
     const dataSession = await newSession;
+
+    if (typeof dataSession.password !== "string") {
+        throw new Error("La contraseña digitada no cumple los parametros necesarios");
+    }
+
     const passHashed = await hashed(dataSession.password);
     dataSession.password = passHashed;
-    return await authRepository.createSession(dataSession);
+
+    return await authRepository.createSession(toLowerCaseDeepRecord(dataSession));
 }
 
-export async function updateById<T extends Record<string, unknown>>(email: string, input: T): Promise<boolean> {
+export async function updateById<T extends Record<string, unknown> & { password?: string }>(email: string, input: T): Promise<boolean> {
     const data = cleanData.arrays(input);
 
     if (Object.keys(data).length === 0) {
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await authRepository.update(email, data);
+    if (data.password && typeof data.password === "string") {
+        data.password = await hashed(data.password);
+    }
+
+    return await authRepository.update(email, toLowerCaseDeepRecord(data));
+}
+
+export async function deleteById(id: string): Promise<boolean> {
+    if (!id) {
+        throw new Error("No se ha suministrado un parametro valido");
+    }
+
+    if (isNaN(Number(id))) {
+        throw new Error("Identificador no valido para la eliminacion de campos");
+    }
+
+    const parseId = parseInt(id, 10);
+
+    const sessionExists = await authRepository.existSessionById(parseId);
+
+    if (!sessionExists) {
+        throw new Error("El perfil seleccionado no se encuentra disponible");
+    }
+
+    const eliminated = authRepository.delete(parseId);
+
+    if (!eliminated) {
+        throw new Error("No se ha podido eliminar el usuario seleccionado");
+    }
+
+    return eliminated;
 }

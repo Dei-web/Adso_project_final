@@ -1,49 +1,73 @@
 import { prisma, Prisma } from "@/lib/prisma";
-import { CreatePieces, CustomPieces } from "../types/models/entity";
 import { selectFields } from "../utils/filtersRepository";
+import { toPiecesCreateInput } from "../mappers/piecesMapper";
+import { cleanData } from "../utils/cleanData";
+import { GetPieces } from "../types/models/entity";
 
 export const piecesRepository = {
-    async findMany(): Promise<CustomPieces[]> {
+    async findMany(): Promise<GetPieces[] | null> {
         try {
-            return await prisma.pieces.findMany();
+            return await prisma.pieces.findMany({
+                orderBy: {
+                  id: "asc" 
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    price: true,
+                    estado: true,
+                    stock: true,
+                    pieceCategory: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            });
         } catch {
             throw new Error("Error en la busqueda de campos");
         }
     },
 
-    async findById(id: number) {
+    async findById(id: number): Promise<GetPieces | null> {
         try {
             return await prisma.pieces.findUnique({
-                where: { id }
+                where: { id },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    price: true,
+                    estado: true,
+                    stock: true,
+                    pieceCategory: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
             });
         } catch {
             throw new Error("Error en la busqueda del campo solicitado");
         }
     },
 
-    async create(pieces: CreatePieces) {
+    async create(pieces: Record<string, unknown>): Promise<Record<string, unknown> | null> {
         try {
-            return await prisma.pieces.create({
-                data: {
-                    name: pieces.name,
-                    description: pieces.description,
-                    price: pieces.price,
-                    stock: pieces.stock,
-                    categoryId: pieces.categoryId,
-                    availablePieces_vehicle: {
-                        create: {
-                            brand: pieces.availableVehicle.brand,
-                            model: pieces.availableVehicle.model
-                        }
-                    },
-                    informationPieces: {
-                        create: {
-                            pieceName: pieces.name,
-                            stockEntry: pieces.stock
-                        }
-                    }
+            const newPiece = await prisma.pieces.create({
+                data: toPiecesCreateInput(pieces),
+                select: {
+                    name: true,
+                    description: true,
+                    price: true,
+                    stock: true
                 }
             });
+
+            const cleanDataPieces = cleanData.cleanEmpty(newPiece);
+
+            return cleanDataPieces;
         } catch (error) {
             console.log(error)
             throw new Error("Error en la creacion de nuevos campos");
@@ -70,6 +94,19 @@ export const piecesRepository = {
             stockDifference = parsedNewStock - oldStock;
         }
 
+
+        const allowedPiecesFields = ['name', 'description', 'price', 'estado', 'stock', 'categoryId'];
+
+        const piecesData: Record<string, unknown> = {};
+
+        for (const key in data) {
+            if (key === 'id') continue;
+
+            if (allowedPiecesFields.includes(key)) {
+                piecesData[key] = data[key];
+            }
+        }
+
         const prismaData: Prisma.PiecesUpdateInput = {
             ...data,
             ...('stock' in data
@@ -93,16 +130,20 @@ export const piecesRepository = {
                 select: dataReturn
             });
         } catch (error) {
+            console.log(error)
             throw new Error("Error en la actualizacion de campos" + error);
         }
     },
 
-    async delete(id: number) {
+    async delete(id: number): Promise<boolean> {
         try {
-            return await prisma.pieces.delete({
+            const eliminated = await prisma.pieces.delete({
                 where: { id }
-            })
-        } catch {
+            });
+
+            return eliminated ? true : false;
+        } catch (error) {
+            console.log(error)
             throw new Error("Error en la eliminacion de campos");
         }
     }

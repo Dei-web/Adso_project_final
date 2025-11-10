@@ -1,19 +1,19 @@
-import { piecesRepository } from "../repository/piecesRepository";
-import { GetPieces } from "../types/models/entity";
+import { servicesPageRepository } from "../repository/servicesPageRepository";
+import { GetServices } from "../types/models/entity";
 import { cleanData } from "../utils/cleanData";
 import { toLowerCaseDeepRecord } from "../utils/filtersRepository";
 
-export async function getPieces(): Promise<GetPieces[] | null> {
-    const data = await piecesRepository.findMany();
+export async function getServices(): Promise<GetServices[] | null> {
+    const data = await servicesPageRepository.findMany();
 
     if (!data) {
-        throw new Error("No se encontraron piezas disponibles");
+        throw new Error("No se encontraron servicios disponibles");
     }
 
     return data;
 }
 
-export async function getPieceById(id: string): Promise<GetPieces | null> {
+export async function getServicesById(id: string): Promise<GetServices | null> {
     if (!id) {
         throw new Error("No se ha suministrado un parametron valido");
     }
@@ -24,20 +24,20 @@ export async function getPieceById(id: string): Promise<GetPieces | null> {
 
     const pieceId = parseInt(id, 10);
 
-    const data = await piecesRepository.findById(pieceId);
+    const data = await servicesPageRepository.findById(pieceId);
 
     if (!data) {
-        throw new Error("No se econtro la pieza especificada");
+        throw new Error("No se econtro el servicio especificada");
     }
 
     return data;
 }
 
-export async function createPiece(newPiece: Record<string, unknown>) {
-    return await piecesRepository.create(toLowerCaseDeepRecord(newPiece));
+export async function createServices(newPiece: Record<string, unknown>) {
+    return await servicesPageRepository.create(toLowerCaseDeepRecord(newPiece));
 }
 
-export async function deletePiece(id: string) {
+export async function deleteServices(id: string) {
     if (!id) {
         throw new Error("No se ha suministrado un parametro valido");
     }
@@ -48,11 +48,11 @@ export async function deletePiece(id: string) {
 
     const pieceId = parseInt(id, 10);
 
-    if (!piecesRepository.findById(pieceId)) {
-        throw new Error('Pieza inexistente');
+    if (!servicesPageRepository.findById(pieceId)) {
+        throw new Error('Servicio inexistente');
     }
 
-    return piecesRepository.delete(pieceId);
+    return servicesPageRepository.delete(pieceId);
 }
 
 export async function updateById<T extends Record<string, unknown>>(id: string, input: T) {
@@ -71,5 +71,5 @@ export async function updateById<T extends Record<string, unknown>>(id: string, 
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await piecesRepository.update(pieceId, toLowerCaseDeepRecord(data));
+    return await servicesPageRepository.update(pieceId, toLowerCaseDeepRecord(data));
 }
