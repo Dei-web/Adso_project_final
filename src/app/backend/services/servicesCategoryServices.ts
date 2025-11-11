@@ -1,10 +1,10 @@
-import { servicesPageRepository } from "../repository/servicesPageRepository";
-import { GetServices } from "../types/models/entity";
+import { serviceCategoryRepository } from "../repository/servicesCategoryRepository";
+import { GetServiceCategory } from "../types/models/entity";
 import { cleanData } from "../utils/cleanData";
 import { toLowerCaseDeepRecord } from "../utils/filtersRepository";
 
-export async function getServices(): Promise<GetServices[] | null> {
-    const data = await servicesPageRepository.findMany();
+export async function getServiceCategory(): Promise<GetServiceCategory[] | null> {
+    const data = await serviceCategoryRepository.findMany();
 
     if (!data) {
         throw new Error("No se encontraron servicios disponibles");
@@ -13,7 +13,7 @@ export async function getServices(): Promise<GetServices[] | null> {
     return data;
 }
 
-export async function getServicesById(id: string): Promise<GetServices | null> {
+export async function getServiceCategory_ById(id: string): Promise<GetServiceCategory | null> {
     if (!id) {
         throw new Error("No se ha suministrado un parametron valido");
     }
@@ -22,22 +22,22 @@ export async function getServicesById(id: string): Promise<GetServices | null> {
         throw new Error("Identificador no valido para la eliminacion de campos");
     }
 
-    const pieceId = parseInt(id, 10);
+    const categoryId = parseInt(id, 10);
 
-    const data = await servicesPageRepository.findById(pieceId);
+    const data = await serviceCategoryRepository.findById(categoryId);
 
     if (!data) {
-        throw new Error("No se econtro el servicio especificada");
+        throw new Error("No se econtro la categoria especificada");
     }
 
     return data;
 }
 
-export async function createServices(newPiece: Record<string, unknown>): Promise<boolean> {
-    return await servicesPageRepository.create(toLowerCaseDeepRecord(newPiece));
+export async function createServiceCategory(newPiece: Record<string, unknown>): Promise<boolean> {
+    return await serviceCategoryRepository.create(toLowerCaseDeepRecord(newPiece));
 }
 
-export async function deleteServices(id: string): Promise<boolean> {
+export async function deleteServiceCategory(id: string): Promise<boolean> {
     if (!id) {
         throw new Error("No se ha suministrado un parametro valido");
     }
@@ -46,13 +46,13 @@ export async function deleteServices(id: string): Promise<boolean> {
         throw new Error("Identificador no valido para la eliminacion de campos");
     }
 
-    const pieceId = parseInt(id, 10);
+    const categoryId = parseInt(id, 10);
 
-    if (!servicesPageRepository.findById(pieceId)) {
+    if (!serviceCategoryRepository.findById(categoryId)) {
         throw new Error('Servicio inexistente');
     }
 
-    return servicesPageRepository.delete(pieceId);
+    return serviceCategoryRepository.delete(categoryId);
 }
 
 export async function updateById<T extends Record<string, unknown>>(id: string, input: T) {
@@ -64,12 +64,12 @@ export async function updateById<T extends Record<string, unknown>>(id: string, 
         throw new Error("Identificador no valido para la eliminacion de campos");
     }
 
-    const pieceId = parseInt(id, 10);
+    const categoryId = parseInt(id, 10);
     const data = cleanData.arrays(input);
 
     if (Object.keys(data).length === 0) {
         throw new Error("No se proporcionaron campos para actualizar");
     }
 
-    return await servicesPageRepository.update(pieceId, toLowerCaseDeepRecord(data));
+    return await serviceCategoryRepository.update(categoryId, toLowerCaseDeepRecord(data));
 }

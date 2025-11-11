@@ -7,12 +7,20 @@ export const servicesPageRepository = {
     async findMany(): Promise<GetServices[] | null> {
         try {
             return await prisma.services.findMany({
+                orderBy: {
+                    id: "asc"
+                },
                 select: {
                     id: true,
                     name: true,
                     description: true,
                     price: true,
-                    guarantee: true
+                    guarantee: true,
+                    author: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
             });
         } catch {
@@ -29,7 +37,12 @@ export const servicesPageRepository = {
                     name: true,
                     description: true,
                     price: true,
-                    guarantee: true
+                    guarantee: true,
+                    author: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
             });
         } catch {
@@ -37,13 +50,14 @@ export const servicesPageRepository = {
         }
     },
 
-    async create(service: Record<string, unknown>) {
+    async create(service: Record<string, unknown>): Promise<boolean> {
         const prismaData = toServiceCreateInput(service);
 
         try {
-            return await prisma.services.create({
+            const newService = await prisma.services.create({
                 data: prismaData
             });
+            return newService ? true : false;
         } catch (error) {
             console.log(error)
             throw new Error("Error en la creacion de nuevos campos");
@@ -51,18 +65,33 @@ export const servicesPageRepository = {
     },
 
     async update(id: number, data: Record<string, unknown>) {
-        const allowedServicesFields = ["name", "description", "price", "guarantee"];
+        const allowedServicesFields = ["name", "description", "price", "guarantee", "serviceCategory_id"];
         const dataServices: Record<string, unknown> = {};
 
         for (const key in data) {
+            if (key === "id") continue;
+
             if (allowedServicesFields.includes(key)) {
                 dataServices[key] = data[key];
             }
         }
 
-        const prismaData: Prisma.ServicesUpdateInput = { ...dataServices };
+        const prismaData: Prisma.ServicesUpdateInput = {
+            ...dataServices
+        };
 
-        const dataReturn = selectFields(data);
+        const dataReturn = {
+            ...selectFields(dataServices),
+            ...('serviceCategory_id' in dataServices
+                ? {
+                    author: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+                : {}),
+        }
 
         try {
             return await prisma.services.update({
@@ -71,15 +100,18 @@ export const servicesPageRepository = {
                 select: dataReturn
             });
         } catch (error) {
+            console.error(error)
             throw new Error("Error en la actualizacion de campos" + error);
         }
     },
 
-    async delete(id: number) {
+    async delete(id: number): Promise<boolean> {
         try {
-            return await prisma.services.delete({
+            const serviceDelete = await prisma.services.delete({
                 where: { id }
-            })
+            });
+
+            return serviceDelete ? true : false;
         } catch {
             throw new Error("Error en la eliminacion de campos");
         }

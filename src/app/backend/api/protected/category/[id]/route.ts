@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { deleteById, updateById, getCategoryById } from "@/app/backend/services/categoryService";
+import { Prisma } from "@prisma/client";
 import { PieceCategory } from "@/app/backend/types/models/entity";
 
 export async function GET(request: NextResponse, { params }: { params: { id: string } }): Promise<NextResponse<PieceCategory | { error: string }>> {
@@ -39,7 +40,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = await params;
-        const data = await request.json();
+        const data: Prisma.PieceCategoryUpdateInput = await request.json();
         const categoryUpdate = await updateById(id, data);
 
         return NextResponse.json(

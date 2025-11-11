@@ -219,7 +219,20 @@ type GetServices = Prisma.ServicesGetPayload<{
     name: true,
     description: true,
     price: true,
-    guarantee: true
+    guarantee: true,
+    author: {
+      select: {
+        name: true
+      }
+    }
+  }
+}>
+
+type GetServiceCategory = Prisma.ServiceCategoryGetPayload<{
+  select: {
+    id: true,
+    name: true,
+    description: true
   }
 }>
 

@@ -5,7 +5,11 @@ import { selectFields } from '../utils/filtersRepository';
 export const categoryRepository = {
     async findMany(): Promise<PieceCategory[]> {
         try {
-            return await prisma.pieceCategory.findMany();
+            return await prisma.pieceCategory.findMany({
+                orderBy: {
+                  id: "asc" 
+                }
+            });
         } catch {
             throw new Error("Error en la busqueda de campos");
         }

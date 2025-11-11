@@ -9,7 +9,7 @@ export const piecesRepository = {
         try {
             return await prisma.pieces.findMany({
                 orderBy: {
-                  id: "asc" 
+                    id: "asc"
                 },
                 select: {
                     id: true,
@@ -108,8 +108,8 @@ export const piecesRepository = {
         }
 
         const prismaData: Prisma.PiecesUpdateInput = {
-            ...data,
-            ...('stock' in data
+            ...piecesData,
+            ...('stock' in piecesData
                 ? {
                     informationPieces: {
                         create: {
@@ -121,7 +121,18 @@ export const piecesRepository = {
                 : {}),
         };
 
-        const dataReturn = selectFields(data);
+        const dataReturn = {
+            ...selectFields(piecesData),
+            ...('categoryId' in piecesData
+                ? {
+                    pieceCategory: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+                : {}),
+        }
 
         try {
             return await prisma.pieces.update({

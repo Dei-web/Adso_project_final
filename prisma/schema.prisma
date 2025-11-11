@@ -48,7 +48,7 @@ model ClientContact {
   createAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
   clientId    Int
-  author      Client   @relation("clientContact", fields: [clientId], references: [id])
+  author      Client   @relation("clientContact", fields: [clientId], references: [id], onDelete: Cascade)
 }
 
 model AppointmentScheduling {
@@ -109,13 +109,13 @@ model Services {
   serviceCategory_id Int
   guarantee          String?
   invoiceDetail      InvoiceDetail[] @relation("clientService")
-  author             ServiceCategory @relation("serviceCategory", fields: [serviceCategory_id], references: [id])
+  author             ServiceCategory @relation("serviceCategory", fields: [serviceCategory_id], references: [id], onDelete: Cascade)
 }
 
 model ServiceCategory {
   id          Int        @id @default(autoincrement())
   name        String     @db.VarChar(50)
-  description String
+  description String?
   createAt    DateTime   @default(now())
   services    Services[] @relation("serviceCategory")
 }
@@ -133,7 +133,7 @@ model Pieces {
   availablePieces_vehicle AvailablePieces_vehicle[] @relation("pieceVehicle")
   informationPieces       InformationPieces[]       @relation("pieceMore_information")
   invoiceDetail           InvoiceDetail[]           @relation("piece_invoiceDetail")
-  pieceCategory           PieceCategory             @relation("pieceCategory", fields: [categoryId], references: [id])
+  pieceCategory           PieceCategory             @relation("pieceCategory", fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model InformationPieces {
@@ -160,7 +160,7 @@ model AvailablePieces_vehicle {
   pieceVehiculo_id Int
   createAt         DateTime @default(now())
   createUpdate     DateTime @updatedAt
-  author           Pieces   @relation("pieceVehicle", fields: [pieceVehiculo_id], references: [id])
+  author           Pieces   @relation("pieceVehicle", fields: [pieceVehiculo_id], references: [id], onDelete: Cascade)
 }
 
 model Suppliers {

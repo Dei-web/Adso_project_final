@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { deletePiece, getPieceById, updateById } from "@/app/backend/services/piecesServices";
+import { Prisma } from "@prisma/client";
 import { GetPieces } from "@/app/backend/types/models/entity";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
@@ -19,7 +20,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const newPieces = await request.json();
+        const newPieces: Prisma.PiecesUpdateInput = await request.json();
         const { id } = await params;
         const piece = await updateById(id, newPieces);
 

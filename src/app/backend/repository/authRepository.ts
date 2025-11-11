@@ -6,6 +6,9 @@ export const authRepository = {
     async findMany(): Promise<GetSession[] | null> {
         try {
             return await prisma.session.findMany({
+                orderBy: {
+                    id: "asc"
+                },
                 select: {
                     id: true,
                     name: true,
