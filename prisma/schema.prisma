@@ -16,6 +16,7 @@ model Session {
   createdAt           DateTime                @default(now())
   appointmentEmployed AppointmentScheduling[] @relation("employedSession")
   credentials         Credentials?            @relation("SessionCredentials")
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Credentials {
@@ -198,6 +199,17 @@ model SuppliersType {
   type        typeSuppliers
   proveedorId Int
   author      Suppliers     @relation("typeSuppliers", fields: [proveedorId], references: [id])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  user      Session  @relation(fields: [userId], references: [id])
+
+  @@index([token])
 }
 
 model LogApp {

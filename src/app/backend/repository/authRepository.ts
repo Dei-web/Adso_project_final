@@ -62,6 +62,22 @@ export const authRepository = {
         }
     },
 
+
+    async getIdByEmail(email: string): Promise<number | null> {
+        try {
+            const idUser = await prisma.session.findFirst({
+                where: { email: email },
+                select: {
+                    id: true
+                }
+            });
+
+            return idUser?.id ?? null;
+        } catch {
+            throw new Error("Error al consultar usuario");
+        }
+    },
+
     async existSessionByEmail(email: string): Promise<boolean> {
         try {
             const count = await prisma.session.count({
@@ -102,26 +118,19 @@ export const authRepository = {
     async update(email: string, data: Record<string, unknown>): Promise<boolean> {
         try {
             const sessionData: Record<string, unknown> = {};
-            const credentialsData: Record<string, unknown> = {};
 
             const allowedSessionFields = ['name', 'role'];
-            const allowedCredentialsFields = ['password'];
 
             for (const key in data) {
                 if (key === 'email') continue;
 
-                if (allowedCredentialsFields.includes(key)) {
-                    credentialsData[key] = data[key];
-                } else if (allowedSessionFields.includes(key)) {
+                if (allowedSessionFields.includes(key)) {
                     sessionData[key] = data[key];
                 }
             }
 
             const prismaData: Prisma.SessionUpdateInput = {
                 ...sessionData,
-                ...(Object.keys(credentialsData).length > 0
-                    ? { credentials: { update: credentialsData } }
-                    : {}),
             };
 
             const result = await prisma.session.update({
@@ -129,8 +138,25 @@ export const authRepository = {
                 data: prismaData
             });
 
-            return typeof result === "object";
+            return result ? true : false;
         } catch {
+            throw new Error("Error en la actualizacion de campos");
+        }
+    },
+
+    async updatePassword(id: number, hashedPassword: string): Promise<boolean> {
+        try {
+            console.warn(id)
+            const result = await prisma.credentials.update({
+                where: { sessionId: id },
+                data: {
+                    password: hashedPassword
+                }
+            });
+
+            return result ? true : false;
+        } catch (error) {
+            console.log(error)
             throw new Error("Error en la actualizacion de campos");
         }
     },
