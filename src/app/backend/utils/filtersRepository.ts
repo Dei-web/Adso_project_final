@@ -27,3 +27,19 @@ export function selectFields(data: object): object {
         return acc;
     }, {} as Record<string, boolean>);
 }
+
+export function buildDynamicSelect(dataGroups: Record<string, unknown>): Record<string, unknown> {
+    const select: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(dataGroups)) {
+        if (!value || Object.keys(value).length === 0) continue;
+
+         if (key.startsWith("client") || typeof value === "object") {
+            select[key] = { select: selectFields(value) };
+        } else {
+            Object.assign(select, selectFields(value));
+        }
+    }
+
+    return select;
+}

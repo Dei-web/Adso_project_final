@@ -1,40 +1,4 @@
-import { Decimal } from "decimal.js";
 import { Prisma } from "@/lib/prisma";
-
-export enum TypeSuppliers {
-  REPUESTOS = "REPUESTOS",
-  HERRAMIENTAS = "HERRAMIENTAS",
-  LUBRICANTES = "LUBRICANTES",
-  SERVICIOS = "SERVICIOS",
-  VEHICULOS = "VEHICULOS",
-  CONSUMIBLES = "CONSUMIBLES",
-  SOFTWARE = "SOFTWARE",
-}
-
-export enum StateSuppliers {
-  ACTIVO = "ACTIVO",
-  INACTIVO = "INACTIVO",
-  PENDIENTE = "PENDIENTE",
-  BLOQUEADO = "BLOQUEADO",
-  SUSPENDIDO = "SUSPENDIDO",
-  ELIMINADO = "ELIMINADO",
-}
-
-export enum TypeChange {
-  UPDATE = "UPDATE",
-  CREATE = "CREATE",
-  DELETE = "DELETE",
-  READ = "READ",
-}
-
-export enum AppointmentState {
-  ASIGNADA = "ASIGNADA",
-  COMPLETADA = "COMPLETADA",
-  PENDIENTE = "PENDIENTE",
-  CANCELADA = "CANCELADA",
-}
-
-/* ========================= MODELS ========================= */
 
 type GetSession = Prisma.SessionGetPayload<{
   select: {
@@ -71,48 +35,55 @@ type GetCredentials = Prisma.SessionGetPayload<{
   }
 }>
 
-export interface Client {
-  id: number;
-  fullName: string;
-  fullSurname: string;
-  identified: string;
-  clientState: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  clientAppointment?: AppointmentScheduling[];
-  clientContact?: ClientContact[];
-  clientVehicle?: ClientVehicle[];
-  clientInvoice?: Invoice[];
-}
+type GetClient = Prisma.ClientGetPayload<{
+  select: {
+    fullName: true,
+    fullSurname: true,
+    identified: true,
+    clientState: true,
+    clientContact: {
+      select: {
+        phoneNumber: true,
+        email: true,
+        address: true
+      }
+    },
+    clientVehicle: {
+      select: {
+        brand: true,
+        model: true,
+        year: true,
+        engineDisplacement: true,
+        description: true
+      }
+    }
+  }
+}>
 
-export interface CreateClient {
-  fullName: string;
-  fullSurname: string;
-  identified: string;
-  clientState?: boolean;
+type UpdateClient = Record<{
+  clientState: boolean;
   phoneNumber: string;
   email: string;
   address: string;
-}
+  description?: string;
+}>
 
-export interface ModifyClient {
-  clientState?: boolean;
-  clientcontact: {
+type CreateClient = {
+  fullName: string;
+  fullSurname: string;
+  identified: string;
+  clientContact: {
     phoneNumber: string;
     email: string;
-    address: string;
-  } | null;
-}
-
-export interface ClientContact {
-  id: number;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  createAt: Date;
-  updatedAt: Date;
-  clientId: number;
-  author: Client;
+    address?: string;
+  }
+  clientVehicle?: {
+    brand: string;
+    model: string;
+    year: Date;
+    engineDisplacement: number;
+    description?: string;
+  }
 }
 
 export interface AppointmentScheduling {
@@ -144,19 +115,6 @@ export interface ModifyAppointMent {
   employedId?: number;
 }
 
-export interface ClientVehicle {
-  id: number;
-  brand: string;
-  model: string;
-  year: Date;
-  engineDisplacement: number;
-  createAt: Date;
-  description: string;
-  updatedAt: Date;
-  clientId: number;
-  author: Client;
-}
-
 export interface CreateVehicle {
   brand: string;
   model: string;
@@ -164,15 +122,6 @@ export interface CreateVehicle {
   engineDisplacement: number;
   description?: string;
   clientId: number;
-}
-
-export interface ModifyVehicle {
-  brand?: string;
-  model?: string;
-  year?: Date;
-  engineDisplacement?: number;
-  description?: string;
-  clientId?: number;
 }
 
 type InvoiceCreate = {
@@ -332,29 +281,6 @@ export interface PieceCategory {
   description: string;
   createAt: Date;
   pieces?: Pieces[];
-}
-
-export interface InformationPieces {
-  id: number;
-  dateOf_entry: Date;
-  moreInformation_id: number;
-  author: Pieces;
-}
-
-export interface AvailablePieces_vehicle {
-  id: number;
-  brand: string;
-  model: string;
-  pieceVehiculo_id: number;
-  createAt: Date;
-  createUpdate: Date;
-  author?: Pieces;
-}
-
-export interface Create_AvailablePieces {
-  brand: string;
-  model: string;
-  pieceVehiculo_id: number;
 }
 
 export interface Suppliers {

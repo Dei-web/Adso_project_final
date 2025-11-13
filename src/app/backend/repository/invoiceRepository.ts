@@ -7,6 +7,9 @@ export const invoiceRepository = {
     async findMany(): Promise<GetInvoice[] | []> {
         try {
             return await prisma.invoice.findMany({
+                orderBy: {
+                  id: 'asc'
+                },
                 include: {
                     author: {
                         select: {

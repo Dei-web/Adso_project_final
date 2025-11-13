@@ -32,7 +32,7 @@ model Client {
   fullName          String                  @db.VarChar(100)
   fullSurname       String                  @db.VarChar(100)
   identified        String                  @unique @db.VarChar(50)
-  clientState       Boolean
+  clientState       Boolean?                @default(true)
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
   clientAppointment AppointmentScheduling[] @relation("clientAppointment")
@@ -71,7 +71,7 @@ model ClientVehicle {
   year               DateTime @db.Date
   engineDisplacement Int
   createAt           DateTime @default(now())
-  description        String
+  description        String?
   updatedAt          DateTime @updatedAt
   clientId           Int
   author             Client   @relation("clientVehicle", fields: [clientId], references: [id])
@@ -139,10 +139,10 @@ model Pieces {
 
 model InformationPieces {
   id                 Int      @id @default(autoincrement())
-  dateOf_entry       DateTime @default(now())
-  moreInformation_id Int
   pieceName          String
   stockEntry         Int
+  dateOf_entry       DateTime @default(now())
+  moreInformation_id Int
   author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id], onDelete: Cascade)
 }
 

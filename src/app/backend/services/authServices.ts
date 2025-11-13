@@ -34,7 +34,7 @@ export async function getSessionById(email: string, password: string): Promise<R
 
     const { credentials, ...userWithoutPassword } = user;
 
-    const token = generateToken(userWithoutPassword);
+    const token = await generateToken(userWithoutPassword);
 
     return { token, userWithoutPassword };
 }
