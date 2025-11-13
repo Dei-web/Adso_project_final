@@ -1,6 +1,5 @@
 import { Decimal } from "decimal.js";
-import { prisma, Prisma } from "@/lib/prisma";
-import type { PieceState, TypeAccount } from '@prisma/client';
+import { Prisma } from "@/lib/prisma";
 
 export enum TypeSuppliers {
   REPUESTOS = "REPUESTOS",
@@ -39,10 +38,10 @@ export enum AppointmentState {
 
 type GetSession = Prisma.SessionGetPayload<{
   select: {
-    id: number;
-    name: string;
-    identificacion: string;
-    email: string;
+    id: number,
+    name: string,
+    identificacion: string,
+    email: string
   }
 }>
 
@@ -176,41 +175,103 @@ export interface ModifyVehicle {
   clientId?: number;
 }
 
-export interface Invoice {
-  id: number;
-  createAt: Date;
-  total: Decimal; // Decimal
-  clientId: number;
-  author: Client;
-  invoiceDetail?: InvoiceDetail;
+type InvoiceCreate = {
+  clientId: number,
+  service: {
+    id: number
+  }[] | null,
+  pieces: {
+    id: number,
+    amount: number
+  }[] | null
 }
 
-export interface CreateInvoice {
-  total: Decimal;
-  clientId: number;
-  invoicedetail: {
-    amount: number;
-    subtotal: Decimal;
-    extra: Decimal;
-    description?: string;
-    pieceId?: number;
-    invoiceDetail_id?: number;
-    serviceId?: number;
-  } | null
-}
+type GetInvoice = Prisma.InvoiceGetPayload<{
+  include: {
+    author: {
+      select: {
+        fullName: true,
+        fullSurname: true,
+      }
+    },
+    invoiceDetail: {
+      select: {
+        amount: true,
+        subtotal: true,
+        extra: true,
+        description: true,
+        pieces: {
+          select: {
+            name: true,
+            price: true
+          }
+        },
+        purchasedService: {
+          select: {
+            name: true,
+            price: true
+          }
+        }
+      }
+    }
+  }
+}>
 
-export interface InvoiceDetail {
+type GetInvoiceById = Prisma.ClientGetPayload<{
+  select: {
+    id: true,
+    fullName: true,
+    fullSurname: true,
+    clientContact: {
+      select: {
+        phoneNumber: true,
+        email: true
+      }
+    },
+    clientInvoice: {
+      select: {
+        total: true,
+        createAt: true,
+        invoiceDetail: {
+          select: {
+            amount: true,
+            subtotal: true,
+            extra: true,
+            description: true,
+            pieces: {
+              select: {
+                name: true,
+                price: true
+              }
+            },
+            purchasedService: {
+              select: {
+                name: true,
+                price: true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}>
+
+type UpdateInvoiceDetails = {
   id: number;
-  amount: number;
-  subtotal: Decimal; // Decimal
-  extra: Decimal; // Decimal
-  description: string;
-  pieceId: number;
-  invoiceDetail_id: number;
-  serviceId: number;
-  author: Invoice;
-  pieces: Pieces;
-  purchasedService: Services;
+  detailId;
+  amount?: number;
+  description?: string;
+  services?: { id: number };
+  pieces?: { id: number };
+};
+
+type InvoiceDetailInput = {
+  amount?: number;
+  subtotal: Prisma.Decimal;
+  description?: string;
+  piece?: { connect: { id: number } };
+  service?: { connect: { id: number } };
 }
 
 type GetServices = Prisma.ServicesGetPayload<{

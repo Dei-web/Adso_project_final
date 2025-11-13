@@ -3,9 +3,9 @@ import { deletePiece, getPieceById, updateById } from "@/app/backend/services/pi
 import { Prisma } from "@prisma/client";
 import { GetPieces } from "@/app/backend/types/models/entity";
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const piece = await deletePiece(id);
 
         return NextResponse.json(piece, { status: 200 })
@@ -18,10 +18,10 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
         const newPieces: Prisma.PiecesUpdateInput = await request.json();
-        const { id } = await params;
+        const { id } = await context.params;
         const piece = await updateById(id, newPieces);
 
         return NextResponse.json(
@@ -36,9 +36,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse<GetPieces | { error: string } | null>> {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse<GetPieces | { error: string } | null>> {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const piece = await getPieceById(id);
 
         return NextResponse.json(

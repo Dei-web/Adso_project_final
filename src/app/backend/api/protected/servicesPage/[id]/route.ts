@@ -4,9 +4,9 @@ import { GetServices } from "@/app/backend/types/models/entity";
 import { deleteServices, getServicesById } from "@/app/backend/services/servicesPageService";
 import { updateById } from "@/app/backend/services/servicesPageService";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse<GetServices | null | { error: string }>> {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse<GetServices | null | { error: string }>> {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const service = await getServicesById(id);
 
         return NextResponse.json(
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const data: Prisma.ServicesUpdateInput = await request.json();
         const serviceUpdate = await updateById(id, data);
 
@@ -40,9 +40,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse<boolean | { error: string }>> {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse<boolean | { error: string }>> {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const serviceDelete = await deleteServices(id);
 
         return NextResponse.json(

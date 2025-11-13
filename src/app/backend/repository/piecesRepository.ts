@@ -77,7 +77,7 @@ export const piecesRepository = {
     async update(id: number, data: Record<string, unknown>) {
         const currentPiece = await prisma.pieces.findUnique({
             where: { id },
-            select: { stock: true, name: true }
+            select: { name: true, estado: true, stock: true }
         });
 
         const stockEntry =
@@ -109,8 +109,9 @@ export const piecesRepository = {
 
         const prismaData: Prisma.PiecesUpdateInput = {
             ...piecesData,
-            ...('stock' in piecesData
+            ...('stock' in piecesData && !('estado' in piecesData)
                 ? {
+                    estado: 'DISPONIBLE',
                     informationPieces: {
                         create: {
                             pieceName: currentPiece?.name as string,
@@ -157,5 +158,5 @@ export const piecesRepository = {
             console.log(error)
             throw new Error("Error en la eliminacion de campos");
         }
-    }
+    },
 }

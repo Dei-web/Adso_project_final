@@ -78,26 +78,26 @@ model ClientVehicle {
 }
 
 model Invoice {
-  id            Int            @id @default(autoincrement())
-  createAt      DateTime       @default(now())
-  total         Decimal        @db.Decimal(15, 2)
+  id            Int             @id @default(autoincrement())
+  createAt      DateTime        @default(now())
+  total         Decimal         @db.Decimal(15, 2)
   clientId      Int
-  author        Client         @relation("clientInvoice", fields: [clientId], references: [id])
-  invoiceDetail InvoiceDetail? @relation("invoiceDetail")
+  author        Client          @relation("clientInvoice", fields: [clientId], references: [id])
+  invoiceDetail InvoiceDetail[] @relation("invoiceDetail")
 }
 
 model InvoiceDetail {
-  id               Int      @id @default(autoincrement())
-  amount           Int
-  subtotal         Decimal  @db.Decimal(15, 2)
-  extra            Decimal  @db.Decimal(15, 2)
-  description      String
-  pieceId          Int
-  invoiceDetail_id Int      @unique
-  serviceId        Int
-  author           Invoice  @relation("invoiceDetail", fields: [invoiceDetail_id], references: [id])
-  pieces           Pieces   @relation("piece_invoiceDetail", fields: [pieceId], references: [id])
-  purchasedService Services @relation("clientService", fields: [serviceId], references: [id])
+  id               Int       @id @default(autoincrement())
+  amount           Int?
+  subtotal         Decimal   @db.Decimal(15, 2)
+  extra            Decimal?  @db.Decimal(15, 2)
+  description      String?
+  pieceId          Int?
+  invoiceDetail_id Int
+  serviceId        Int?
+  author           Invoice   @relation("invoiceDetail", fields: [invoiceDetail_id], references: [id], onDelete: Cascade)
+  pieces           Pieces?   @relation("piece_invoiceDetail", fields: [pieceId], references: [id])
+  purchasedService Services? @relation("clientService", fields: [serviceId], references: [id])
 }
 
 model Services {
@@ -139,10 +139,10 @@ model Pieces {
 
 model InformationPieces {
   id                 Int      @id @default(autoincrement())
-  pieceName          String
-  stockEntry         Int
   dateOf_entry       DateTime @default(now())
   moreInformation_id Int
+  pieceName          String
+  stockEntry         Int
   author             Pieces   @relation("pieceMore_information", fields: [moreInformation_id], references: [id], onDelete: Cascade)
 }
 

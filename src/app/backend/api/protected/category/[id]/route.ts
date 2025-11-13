@@ -3,9 +3,9 @@ import { deleteById, updateById, getCategoryById } from "@/app/backend/services/
 import { Prisma } from "@prisma/client";
 import { PieceCategory } from "@/app/backend/types/models/entity";
 
-export async function GET(request: NextResponse, { params }: { params: { id: string } }): Promise<NextResponse<PieceCategory | { error: string }>> {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse<PieceCategory | { error: string }>> {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const category = await getCategoryById(id);
 
         return NextResponse.json(
@@ -20,9 +20,9 @@ export async function GET(request: NextResponse, { params }: { params: { id: str
     }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const categoryDelete = await deleteById(id);
 
         return NextResponse.json(
@@ -37,9 +37,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const data: Prisma.PieceCategoryUpdateInput = await request.json();
         const categoryUpdate = await updateById(id, data);
 
