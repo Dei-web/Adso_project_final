@@ -21,7 +21,7 @@ export function toClientCreateInput(data: CreateClient) {
                 create: {
                     brand: clientVehicle.brand as string,
                     model: clientVehicle.model as string,
-                    year: clientVehicle.year as Date,
+                    year: clientVehicle.year as number,
                     engineDisplacement: clientVehicle.engineDisplacement as number,
                     ...('description' in data ? {
                         description: clientVehicle.description as string

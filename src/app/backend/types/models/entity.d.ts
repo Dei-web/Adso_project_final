@@ -1,4 +1,8 @@
+import { AppointmentState } from "@/generated/prisma/enums";
 import { Prisma } from "@/lib/prisma";
+
+type ISODate = `${number}-${number}-${number}` | null;
+type ISOTime = `${number}:${number}` | null;
 
 type GetSession = Prisma.SessionGetPayload<{
   select: {
@@ -80,48 +84,79 @@ type CreateClient = {
   clientVehicle?: {
     brand: string;
     model: string;
-    year: Date;
+    year: number;
     engineDisplacement: number;
     description?: string;
   }
 }
 
-export interface AppointmentScheduling {
-  id: number;
-  appointmentDate: Date;
-  ubicacion: string;
-  appointmentState: AppointmentState;
-  details: string;
-  employedId: number;
+type GetVehicleClient = Prisma.ClientVehicleGetPayload<{
+  select: {
+    brand: true,
+    model: true,
+    year: true,
+    engineDisplacement: true
+    description: true
+  }
+}>
+
+type CreateVehicle = {
   clientId: number;
-  authorEmployed: Session;
-  author: Client;
-}
-
-export interface CreateAppointment {
-  appointmentDate: Date;
-  ubicacion: string;
-  appointmentState: AppointmentState;
-  details?: string;
-  employedId: number;
-  clientId: number;
-}
-
-export interface ModifyAppointMent {
-  appointmentDate?: Date;
-  ubicacion?: string;
-  appointmentState?: AppointmentState;
-  details?: string;
-  employedId?: number;
-}
-
-export interface CreateVehicle {
   brand: string;
-  model: string;
-  year: Date;
+  model: year;
+  year: number;
   engineDisplacement: number;
   description?: string;
+}
+
+type UpdateVehicle = Record<{
+  engineDisplacement: string;
+  description?: string;
+}>
+
+type CreateAppointment = {
   clientId: number;
+  employedId?: number;
+  appointmentDate: Date;
+  ubicacion: string;
+  details?: string;
+}
+
+type GetAppointment = Prisma.AppointmentSchedulingGetPayload<{
+  select: {
+    id: true,
+    appointmentDate: true,
+    ubicacion: true,
+    appointmentState: true,
+    details: true,
+    author: {
+      select: {
+        id: true,
+        fullName: true,
+        fullSurname: true,
+        identified: true
+      }
+    },
+    employedAuthor: {
+      select: {
+        id: true,
+        name: true,
+        identificacion: true,
+        role: true
+      }
+    }
+  }
+}>
+
+type UpdateAppointment = {
+  employedId: number;
+  ubicacion: string;
+  appointmentState: AppointmentState;
+  details?: string;
+  time?: {
+    appointmentDate: ISODate | null;
+    appointmentTime: ISOTime | null;
+  }
 }
 
 type InvoiceCreate = {
@@ -328,3 +363,88 @@ export interface LogApp {
   message?: string;
   data: unknown;
 }
+
+type CreateChecklist = {
+  checkType: string;
+  fuelLevel: number;
+  mileage: string;
+  generalNotes: string;
+  technicianName: string;
+  appointmentId: number;
+};
+
+type CreateChecklistItem = {
+  label: string;
+  category: string;
+  checked: boolean;
+  condition?: string;
+  notes?: string;
+  checklistId: number;
+};
+
+type GetChecklist = Prisma.VehicleChecklistGetPayload<{
+  select: {
+    id: true;
+    checkType: true;
+    fuelLevel: true;
+    mileage: true;
+    generalNotes: true;
+    technicianName: true;
+    completedAt: true;
+    appointment: {
+      select: {
+        id: true;
+        appointmentDate: true;
+        ubicacion: true;
+        author: {
+          select: {
+            id: true;
+            fullName: true;
+            fullSurname: true;
+            identified: true;
+          };
+        };
+      };
+    };
+    items: {
+      select: {
+        id: true;
+        label: true;
+        category: true;
+        checked: true;
+        condition: true;
+        notes: true;
+      };
+    };
+  };
+}>;
+
+type GetChecklistItem = Prisma.ChecklistItemGetPayload<{
+  select: {
+    id: true;
+    label: true;
+    category: true;
+    checked: true;
+    condition: true;
+    notes: true;
+    checklistId: true;
+  };
+}>;
+
+type UpdateChecklist = Partial<{
+  checkType: string;
+  fuelLevel: number;
+  mileage: string;
+  generalNotes?: string;
+  technicianName: string;
+  appointmentId: number;
+}>;
+
+type UpdateChecklistItem = Partial<{
+  label: string;
+  category: string;
+  checked: boolean;
+  condition?: string;
+  notes?: string;
+  checklistId: number;
+}>;

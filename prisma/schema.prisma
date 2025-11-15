@@ -53,28 +53,29 @@ model ClientContact {
 }
 
 model AppointmentScheduling {
-  id               Int              @id @default(autoincrement())
+  id               Int                @id @default(autoincrement())
   appointmentDate  DateTime
-  ubicacion        String           @db.VarChar(50)
-  appointmentState AppointmentState @default(ASIGNADA)
+  ubicacion        String             @db.VarChar(50)
+  appointmentState AppointmentState   @default(ASIGNADA)
   details          String?
   clientId         Int
-  employedId       Int
-  author           Client           @relation("clientAppointment", fields: [clientId], references: [id])
-  employedAuthor   Session          @relation("employedSession", fields: [employedId], references: [id])
+  employedId       Int?
+  checkList        VehicleChecklist[]
+  author           Client             @relation("clientAppointment", fields: [clientId], references: [id])
+  employedAuthor   Session?           @relation("employedSession", fields: [employedId], references: [id])
 }
 
 model ClientVehicle {
   id                 Int      @id @default(autoincrement())
   brand              String   @db.VarChar(20)
   model              String   @db.VarChar(20)
-  year               DateTime @db.Date
+  year               Int
   engineDisplacement Int
   createAt           DateTime @default(now())
   description        String?
   updatedAt          DateTime @updatedAt
-  clientId           Int
-  author             Client   @relation("clientVehicle", fields: [clientId], references: [id])
+  clientId           Int?
+  author             Client?  @relation("clientVehicle", fields: [clientId], references: [id])
 }
 
 model Invoice {
@@ -210,6 +211,30 @@ model PasswordResetToken {
   user      Session  @relation(fields: [userId], references: [id])
 
   @@index([token])
+}
+
+model VehicleChecklist {
+  id             Int                   @id @default(autoincrement())
+  checkType      String
+  fuelLevel      Int
+  mileage        String
+  generalNotes   String
+  technicianName String
+  completedAt    DateTime              @default(now())
+  appointmentId  Int
+  appointment    AppointmentScheduling @relation(fields: [appointmentId], references: [id])
+  items          ChecklistItem[]
+}
+
+model ChecklistItem {
+  id          Int              @id @default(autoincrement())
+  label       String
+  category    String
+  checked     Boolean
+  condition   String?
+  notes       String?
+  checklistId Int
+  checklist   VehicleChecklist @relation(fields: [checklistId], references: [id])
 }
 
 model LogApp {

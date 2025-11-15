@@ -1,3 +1,5 @@
+import { ISODate, ISOTime } from "../types/models/entity";
+
 export function toLowerCaseDeepRecord<T extends Record<string, unknown>>(obj: T): T {
     const excludeKeys = ["password", "email", "estado", "state", "appointmentState", "role"];
 
@@ -34,7 +36,7 @@ export function buildDynamicSelect(dataGroups: Record<string, unknown>): Record<
     for (const [key, value] of Object.entries(dataGroups)) {
         if (!value || Object.keys(value).length === 0) continue;
 
-         if (key.startsWith("client") || typeof value === "object") {
+        if (key.startsWith("client") || typeof value === "object") {
             select[key] = { select: selectFields(value) };
         } else {
             Object.assign(select, selectFields(value));
@@ -42,4 +44,35 @@ export function buildDynamicSelect(dataGroups: Record<string, unknown>): Record<
     }
 
     return select;
+}
+
+export function filterCurrent(
+  current: Date | null,
+  date?: ISODate | null,
+  time?: ISOTime | null
+): Date | undefined {
+
+  if (!current) return undefined;
+
+  const updated = new Date(current.getTime());
+  let changed = false;
+
+  if (date) {
+    const [y, m, d] = date.split("-").map(Number);
+    updated.setFullYear(y, m - 1, d);
+    changed = true;
+  }
+
+  if (time) {
+    const [h, min] = time.split(":").map(Number);
+    updated.setHours(h, min, 0, 0);
+    changed = true;
+  }
+  if (!changed) return undefined;
+
+  if (updated.getTime() === current.getTime()) {
+    return undefined;
+  }
+
+  return updated;
 }
