@@ -60,9 +60,9 @@ model AppointmentScheduling {
   details          String?
   clientId         Int
   employedId       Int?
-  checkList        VehicleChecklist[]
   author           Client             @relation("clientAppointment", fields: [clientId], references: [id])
   employedAuthor   Session?           @relation("employedSession", fields: [employedId], references: [id])
+  checkList        VehicleChecklist[]
 }
 
 model ClientVehicle {
@@ -222,8 +222,8 @@ model VehicleChecklist {
   technicianName String
   completedAt    DateTime              @default(now())
   appointmentId  Int
-  appointment    AppointmentScheduling @relation(fields: [appointmentId], references: [id])
   items          ChecklistItem[]
+  appointment    AppointmentScheduling @relation(fields: [appointmentId], references: [id])
 }
 
 model ChecklistItem {
@@ -235,6 +235,17 @@ model ChecklistItem {
   notes       String?
   checklistId Int
   checklist   VehicleChecklist @relation(fields: [checklistId], references: [id])
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  mimeType    String
+  extension   String
+  data        Bytes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model LogApp {
